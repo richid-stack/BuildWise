@@ -1,0 +1,1691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Ghana AI Estimator — Build Smarter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,700;1,9..144,300;1,9..144,500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+:root{
+  --ink:#0d0d0b;--ink-70:#3a3a35;--ink-40:#8a8a80;--ink-15:#e8e5df;
+  --cream:#faf7f2;--cream-2:#f3efe8;--cream-3:#ede8e0;
+  --dark:#141410;--dark-2:#1c1c17;--dark-3:#242420;
+  --accent:#c9622a;--accent-2:#e07a45;--accent-light:rgba(201,98,42,0.12);
+  --gold:#c9a227;--green:#4caf76;
+  --border:rgba(13,13,11,0.08);--border-dark:rgba(255,255,255,0.07);
+  --r:14px;--rl:22px;
+  --sh:0 2px 8px rgba(0,0,0,0.06),0 8px 32px rgba(0,0,0,0.05);
+  --shm:0 4px 20px rgba(0,0,0,0.10),0 16px 48px rgba(0,0,0,0.08);
+  --shl:0 8px 40px rgba(0,0,0,0.14),0 32px 80px rgba(0,0,0,0.10);
+}
+body{font-family:'DM Sans',sans-serif;background:var(--dark);color:var(--cream);overflow-x:hidden;-webkit-font-smoothing:antialiased;cursor:none}
+
+/* CURSOR */
+#cur{position:fixed;width:10px;height:10px;background:var(--accent);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .25s,height .25s}
+#cur-ring{position:fixed;width:36px;height:36px;border:1.5px solid rgba(201,98,42,0.4);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .3s,height .3s,opacity .3s}
+
+/* GRAIN */
+#grain{position:fixed;inset:0;z-index:998;pointer-events:none;opacity:.025;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:0 52px;height:66px;background:rgba(20,20,16,0.8);backdrop-filter:blur(24px);border-bottom:1px solid var(--border-dark);transition:background .3s}
+.logo{display:flex;align-items:center;gap:11px;text-decoration:none}
+.logo-mark{width:34px;height:34px;background:var(--accent);border-radius:9px;display:flex;align-items:center;justify-content:center}
+.logo-mark svg{width:16px;height:16px}
+.logo-text{font-family:'Fraunces',serif;font-size:16px;color:var(--cream);font-weight:500;letter-spacing:-.3px}
+.logo-text span{color:var(--accent)}
+.nav-links{display:flex;gap:32px;list-style:none}
+.nav-links a{font-size:13px;color:rgba(250,247,242,.45);text-decoration:none;transition:color .2s}
+.nav-links a:hover{color:var(--cream)}
+.nav-right{display:flex;align-items:center;gap:10px}
+.btn-ghost{font-family:'DM Sans',sans-serif;font-size:13px;color:rgba(250,247,242,.5);background:none;border:none;cursor:none;padding:8px 14px;border-radius:8px;transition:all .2s;text-decoration:none}
+.btn-ghost:hover{background:rgba(255,255,255,.06);color:var(--cream)}
+.btn-primary{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:#fff;background:var(--accent);border:none;cursor:none;padding:9px 20px;border-radius:8px;text-decoration:none;transition:all .2s}
+.btn-primary:hover{background:var(--accent-2);transform:translateY(-1px);box-shadow:0 6px 20px rgba(201,98,42,.35)}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:100px 52px 60px;background:var(--dark);position:relative;overflow:hidden;text-align:center}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 30%,rgba(201,98,42,.06),transparent 65%);pointer-events:none}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(201,98,42,.1);color:var(--accent-2);font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;padding:6px 14px;border-radius:100px;border:1px solid rgba(201,98,42,.2);margin-bottom:28px;opacity:0;animation:fadeUp .7s .2s forwards}
+.hero-eyebrow::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--accent);animation:pulse 2s infinite}
+.hero h1{font-family:'Fraunces',serif;font-size:clamp(42px,5.5vw,82px);font-weight:500;line-height:1.05;letter-spacing:-.04em;color:var(--cream);max-width:820px;margin-bottom:22px;opacity:0;animation:fadeUp .8s .35s forwards}
+.hero h1 em{font-style:italic;color:var(--accent);font-weight:300}
+.hero-sub{font-size:18px;font-weight:300;line-height:1.7;color:rgba(250,247,242,.48);max-width:500px;margin:0 auto 40px;opacity:0;animation:fadeUp .7s .5s forwards}
+.hero-actions{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:20px;opacity:0;animation:fadeUp .7s .65s forwards}
+.btn-hero{font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;color:#fff;background:var(--accent);border:none;cursor:none;padding:15px 32px;border-radius:10px;text-decoration:none;transition:all .2s}
+.btn-hero:hover{background:var(--accent-2);transform:translateY(-2px);box-shadow:0 10px 32px rgba(201,98,42,.38)}
+.btn-hero-ghost{font-family:'DM Sans',sans-serif;font-size:15px;font-weight:400;color:rgba(250,247,242,.55);background:none;border:1px solid rgba(255,255,255,.12);cursor:none;padding:14px 26px;border-radius:10px;text-decoration:none;transition:all .2s}
+.btn-hero-ghost:hover{border-color:rgba(255,255,255,.25);color:var(--cream);transform:translateY(-1px)}
+.hero-trust{font-size:12px;color:rgba(250,247,242,.25);margin-bottom:60px;opacity:0;animation:fadeUp .7s .8s forwards}
+.hero-trust span{color:rgba(250,247,242,.45)}
+
+/* THE MAIN HERO DEMO FRAME */
+.hero-demo{width:100%;max-width:1080px;opacity:0;animation:fadeUp 1s .9s forwards;position:relative}
+.demo-frame{background:var(--dark-2);border-radius:var(--rl);overflow:hidden;box-shadow:0 0 0 1px rgba(255,255,255,.07),var(--shl);position:relative}
+.demo-frame-bar{height:44px;background:var(--dark-3);display:flex;align-items:center;padding:0 18px;gap:12px;border-bottom:1px solid rgba(255,255,255,.05)}
+.dot{width:11px;height:11px;border-radius:50%}
+.dot-r{background:#ff5f57}.dot-y{background:#ffbd2e}.dot-g{background:#28c840}
+.demo-frame-title{font-size:12px;color:rgba(250,247,242,.3);margin:0 auto;letter-spacing:.03em}
+.demo-frame-badge{font-size:10px;font-weight:500;color:var(--accent);background:rgba(201,98,42,.1);padding:3px 10px;border-radius:100px;border:1px solid rgba(201,98,42,.2)}
+
+/* PLAN + 3D SPLIT */
+.demo-content{display:grid;grid-template-columns:1fr 1fr;min-height:520px}
+.demo-plan-side{position:relative;border-right:1px solid rgba(255,255,255,.05);overflow:hidden;background:#f8f6f1}
+.demo-3d-side{position:relative;background:#0a0a08;overflow:hidden}
+.demo-3d-side canvas{width:100%!important;height:100%!important;display:block;position:absolute;inset:0}
+.plan-mode-label{position:absolute;top:14px;left:14px;font-size:10px;font-weight:500;color:var(--ink-40);letter-spacing:.08em;text-transform:uppercase;z-index:10;background:rgba(248,246,241,.9);padding:4px 10px;border-radius:100px;border:1px solid var(--border)}
+.plan-mode-label-3d{position:absolute;top:14px;left:14px;font-size:10px;font-weight:500;color:rgba(250,247,242,.5);letter-spacing:.08em;text-transform:uppercase;z-index:10;background:rgba(20,20,16,.7);backdrop-filter:blur(8px);padding:4px 10px;border-radius:100px;border:1px solid rgba(255,255,255,.08)}
+.plan-canvas{width:100%;height:100%;display:block;position:absolute;inset:0}
+
+/* Floating data cards */
+.float-card{position:absolute;background:rgba(20,20,16,.9);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:12px 16px;z-index:20;animation:floatCard 4s ease-in-out infinite}
+.fc-label{font-size:10px;color:rgba(250,247,242,.4);margin-bottom:4px;letter-spacing:.04em}
+.fc-value{font-size:15px;font-weight:600;color:var(--cream);font-family:'Fraunces',serif;letter-spacing:-.02em}
+.fc-sub{font-size:10px;color:rgba(250,247,242,.35);margin-top:2px}
+.float-card-light{background:rgba(250,247,242,.96);border:1px solid var(--border);border-radius:12px;padding:12px 16px;position:absolute;z-index:20;box-shadow:var(--shm)}
+.fc-label-light{font-size:10px;color:var(--ink-40);margin-bottom:4px;letter-spacing:.04em}
+.fc-value-light{font-size:14px;font-weight:600;color:var(--ink);font-family:'Fraunces',serif}
+.fc-sub-light{font-size:10px;color:var(--ink-40);margin-top:2px}
+
+/* DEMO TABS */
+.demo-tabs{display:flex;gap:2px;padding:12px 18px;background:var(--dark-3);border-top:1px solid rgba(255,255,255,.05)}
+.demo-tab{font-family:'DM Sans',sans-serif;font-size:12px;font-weight:400;color:rgba(250,247,242,.35);background:none;border:none;cursor:none;padding:7px 16px;border-radius:8px;transition:all .2s;white-space:nowrap}
+.demo-tab.active{background:rgba(255,255,255,.08);color:var(--cream);font-weight:500}
+.demo-tab:hover:not(.active){color:rgba(250,247,242,.6)}
+
+/* TICKER */
+.ticker-wrap{background:var(--dark-2);border-top:1px solid var(--border-dark);border-bottom:1px solid var(--border-dark);height:46px;display:flex;align-items:center;overflow:hidden}
+.ticker-label{flex-shrink:0;padding:0 24px;font-size:10.5px;font-weight:500;color:var(--accent);letter-spacing:.1em;text-transform:uppercase;border-right:1px solid var(--border-dark);height:100%;display:flex;align-items:center;gap:7px;background:var(--dark-2);z-index:2;white-space:nowrap}
+.ticker-label::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--accent);animation:pulse 1.5s infinite}
+.ticker-track{display:flex;animation:ticker 30s linear infinite;white-space:nowrap}
+.ticker-item{display:flex;align-items:center;gap:9px;padding:0 28px;border-right:1px solid rgba(255,255,255,.04);height:46px}
+.t-name{font-size:12px;font-weight:400;color:rgba(250,247,242,.45)}
+.t-price{font-size:12.5px;font-weight:600;color:var(--cream)}
+.t-up{font-size:10.5px;font-weight:500;color:#4caf76}
+.t-dn{font-size:10.5px;font-weight:500;color:#e05a5a}
+@keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* PROBLEM */
+.problem{background:var(--dark);padding:100px 52px}
+.problem-inner{max-width:1100px;margin:0 auto}
+.problem-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:2px;margin-top:60px}
+.prob-card{background:var(--dark-2);padding:48px 36px;position:relative;overflow:hidden;transition:background .25s}
+.prob-card:first-child{border-radius:var(--rl) 0 0 var(--rl)}
+.prob-card:last-child{border-radius:0 var(--rl) var(--rl) 0}
+.prob-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:0;transition:opacity .3s}
+.prob-card:hover{background:var(--dark-3)}
+.prob-card:hover::after{opacity:1}
+.prob-num{font-family:'Fraunces',serif;font-size:58px;font-weight:700;color:var(--accent);line-height:1;margin-bottom:16px;letter-spacing:-.03em}
+.prob-title{font-size:16px;font-weight:500;color:var(--cream);margin-bottom:10px}
+.prob-text{font-size:13.5px;font-weight:300;line-height:1.7;color:rgba(250,247,242,.38)}
+
+/* PLAN SHOWCASE */
+.plan-showcase{background:var(--cream);padding:0;overflow:hidden}
+.plan-showcase-inner{max-width:1100px;margin:0 auto;padding:100px 52px}
+.plan-showcase-top{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;margin-bottom:60px}
+.eyebrow{font-size:11px;font-weight:500;color:var(--accent);letter-spacing:.12em;text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.eyebrow::before{content:'';width:20px;height:1px;background:var(--accent)}
+.sec-title{font-family:'Fraunces',serif;font-size:clamp(32px,3.8vw,52px);font-weight:500;line-height:1.1;letter-spacing:-.028em;color:var(--ink);margin-bottom:18px}
+.sec-sub{font-size:16px;font-weight:300;line-height:1.7;color:var(--ink-40)}
+.plan-stats{display:flex;flex-direction:column;gap:16px;margin-top:32px}
+.plan-stat{display:flex;align-items:center;gap:14px;padding:16px 20px;background:var(--cream-2);border:1px solid var(--border);border-radius:var(--r)}
+.plan-stat-icon{width:36px;height:36px;background:var(--accent-light);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.plan-stat-icon svg{width:16px;height:16px;color:var(--accent)}
+.plan-stat-text{font-size:13.5px;font-weight:400;color:var(--ink-70);line-height:1.5}
+.plan-stat-text strong{font-weight:600;color:var(--ink)}
+
+/* BIG PLAN CANVAS */
+.plan-big-frame{background:white;border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;box-shadow:var(--shl);position:relative}
+.plan-big-canvas{width:100%;display:block}
+.plan-controls{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;background:var(--cream-2);border-top:1px solid var(--border)}
+.plan-ctrl-left{display:flex;gap:8px}
+.plan-btn{font-family:'DM Sans',sans-serif;font-size:12.5px;font-weight:500;color:var(--ink-70);background:var(--cream);border:1px solid var(--border);cursor:none;padding:8px 16px;border-radius:8px;transition:all .2s}
+.plan-btn:hover,.plan-btn.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+.plan-ctrl-right{display:flex;align-items:center;gap:12px}
+.plan-scale{font-size:11.5px;color:var(--ink-40)}
+.plan-btn-export{font-family:'DM Sans',sans-serif;font-size:12.5px;font-weight:500;color:#fff;background:var(--accent);border:none;cursor:none;padding:8px 18px;border-radius:8px;transition:all .2s}
+.plan-btn-export:hover{background:var(--accent-2);transform:translateY(-1px)}
+
+/* 3D LIFT SECTION */
+.lift-frame{background:var(--dark);border:1px solid rgba(255,255,255,.06);border-radius:var(--rl);overflow:hidden;box-shadow:var(--shl);position:relative;margin-top:20px}
+.lift-canvas-wrap{aspect-ratio:16/7;position:relative}
+.lift-canvas-wrap canvas{width:100%!important;height:100%!important;display:block}
+.lift-hint{position:absolute;bottom:18px;right:18px;background:rgba(20,20,16,.8);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.1);border-radius:100px;padding:7px 16px;font-size:11px;color:rgba(250,247,242,.45);pointer-events:none}
+.lift-badge{position:absolute;top:18px;right:18px;background:rgba(250,247,242,.95);border:1px solid var(--border);border-radius:var(--r);padding:12px 16px;display:flex;align-items:center;gap:10px;box-shadow:var(--shm);animation:floatCard 4s 1s ease-in-out infinite}
+.lift-badge-icon{width:32px;height:32px;background:var(--accent-light);border-radius:8px;display:flex;align-items:center;justify-content:center}
+.lift-badge-num{font-family:'Fraunces',serif;font-size:18px;font-weight:500;color:var(--ink);line-height:1}
+.lift-badge-label{font-size:10.5px;color:var(--ink-40)}
+.lift-badge-2{position:absolute;top:18px;left:18px;background:rgba(20,20,16,.85);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.1);border-radius:var(--r);padding:12px 16px;display:flex;align-items:center;gap:10px;animation:floatCard 4s 2s ease-in-out infinite}
+
+/* PERSONA TOGGLE */
+.persona-section{background:var(--cream-2);padding:100px 52px}
+.persona-inner{max-width:1100px;margin:0 auto}
+.persona-toggle-wrap{display:flex;justify-content:center;margin:40px 0}
+.persona-toggle{display:flex;background:var(--cream);border:1px solid var(--border);border-radius:100px;padding:4px;gap:0}
+.persona-btn{font-family:'DM Sans',sans-serif;font-size:14px;font-weight:400;color:var(--ink-40);background:none;border:none;cursor:none;padding:10px 28px;border-radius:100px;transition:all .3s;white-space:nowrap}
+.persona-btn.active{background:var(--ink);color:#fff;font-weight:500}
+.persona-content{display:none}
+.persona-content.active{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+.persona-features{display:flex;flex-direction:column;gap:16px;margin-top:32px}
+.persona-feat{display:flex;align-items:flex-start;gap:14px;padding:18px 20px;background:var(--cream);border:1px solid var(--border);border-radius:var(--r);transition:all .25s}
+.persona-feat:hover{transform:translateX(4px);border-color:rgba(201,98,42,.2);background:rgba(201,98,42,.02)}
+.pf-icon{width:38px;height:38px;background:var(--accent-light);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.pf-icon svg{width:17px;height:17px;color:var(--accent)}
+.pf-title{font-size:14px;font-weight:500;color:var(--ink);margin-bottom:4px}
+.pf-text{font-size:13px;font-weight:300;color:var(--ink-40);line-height:1.55}
+.persona-visual{border-radius:var(--rl);overflow:hidden;box-shadow:var(--shl);background:var(--dark);position:relative}
+.persona-visual canvas{width:100%!important;height:300px!important;display:block}
+
+/* CUSTOM ESTIMATOR */
+.estimator-section{background:var(--dark);padding:100px 52px;overflow:hidden}
+.estimator-inner{max-width:1100px;margin:0 auto}
+.estimator-demo{display:grid;grid-template-columns:1fr 1.1fr;gap:40px;margin-top:60px;align-items:start}
+.est-panel{background:var(--cream);border-radius:var(--rl);overflow:hidden;box-shadow:var(--shl)}
+.est-panel-header{padding:20px 24px;background:var(--ink);display:flex;align-items:center;justify-content:space-between}
+.est-panel-title{font-size:14px;font-weight:500;color:var(--cream)}
+.est-panel-badge{font-size:10px;font-weight:500;color:var(--accent-2);background:rgba(201,98,42,.15);padding:3px 10px;border-radius:100px;border:1px solid rgba(201,98,42,.2)}
+.est-body{padding:20px 24px;display:flex;flex-direction:column;gap:0}
+.est-section-header{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);margin-bottom:4px}
+.est-section-label{font-size:11px;font-weight:600;color:var(--ink);letter-spacing:.06em;text-transform:uppercase}
+.est-section-total{font-size:12px;font-weight:600;color:var(--accent)}
+.est-row{display:grid;grid-template-columns:1fr 60px 80px 80px;gap:8px;padding:8px 0;border-bottom:1px solid rgba(13,13,11,.05);align-items:center;animation:rowIn .4s ease forwards}
+@keyframes rowIn{from{opacity:0;transform:translateX(-6px)}to{opacity:1;transform:translateX(0)}}
+.est-item-name{font-size:12.5px;color:var(--ink-70)}
+.est-qty{font-size:12px;color:var(--ink-40);text-align:center}
+.est-rate{font-size:12px;color:var(--ink-40);text-align:right}
+.est-total{font-size:12.5px;font-weight:600;color:var(--ink);text-align:right}
+.est-add-row{display:flex;align-items:center;gap:8px;padding:8px 0;cursor:none;opacity:.5;transition:opacity .2s}
+.est-add-row:hover{opacity:1}
+.est-add-btn{width:22px;height:22px;border-radius:50%;border:1.5px dashed var(--ink-40);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.est-add-text{font-size:12px;color:var(--ink-40)}
+.est-grand-total{padding:16px 24px;background:var(--ink);display:flex;align-items:center;justify-content:space-between}
+.est-gt-label{font-size:12px;color:rgba(250,247,242,.45)}
+.est-gt-value{font-family:'Fraunces',serif;font-size:22px;font-weight:500;color:var(--cream);letter-spacing:-.02em}
+
+/* PDF PREVIEW */
+.pdf-preview{background:white;border-radius:var(--rl);overflow:hidden;box-shadow:var(--shl);position:relative}
+.pdf-inner{padding:32px}
+.pdf-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:28px;padding-bottom:20px;border-bottom:3px solid var(--ink)}
+.pdf-logo-area{display:flex;flex-direction:column;gap:4px}
+.pdf-logo-placeholder{width:80px;height:28px;background:var(--ink);border-radius:5px;display:flex;align-items:center;justify-content:center}
+.pdf-logo-placeholder span{font-size:9px;font-weight:600;color:#fff;letter-spacing:.05em}
+.pdf-company{font-size:10px;color:var(--ink-40);margin-top:4px}
+.pdf-doc-info{text-align:right}
+.pdf-doc-title{font-family:'Fraunces',serif;font-size:18px;font-weight:500;color:var(--ink);line-height:1}
+.pdf-doc-ref{font-size:10px;color:var(--ink-40);margin-top:4px}
+.pdf-valid{font-size:9.5px;font-weight:500;color:var(--accent);margin-top:3px}
+.pdf-project-info{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px}
+.pdf-info-block{padding:10px 14px;background:#f8f6f1;border-radius:6px}
+.pdf-info-label{font-size:9px;font-weight:500;color:var(--ink-40);letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px}
+.pdf-info-value{font-size:12px;font-weight:500;color:var(--ink)}
+.pdf-table-header{display:grid;grid-template-columns:1fr 50px 70px 70px;gap:8px;padding:8px 12px;background:var(--ink);border-radius:6px 6px 0 0}
+.pdf-th{font-size:9.5px;font-weight:600;color:rgba(250,247,242,.7);letter-spacing:.06em;text-transform:uppercase}
+.pdf-th:not(:first-child){text-align:right}
+.pdf-table-rows{border:1px solid #e8e5df;border-top:none;border-radius:0 0 6px 6px;overflow:hidden}
+.pdf-tr{display:grid;grid-template-columns:1fr 50px 70px 70px;gap:8px;padding:8px 12px;border-bottom:1px solid #f0ece6;align-items:center}
+.pdf-tr:last-child{border-bottom:none}
+.pdf-tr:nth-child(even){background:#faf8f5}
+.pdf-td{font-size:11px;color:var(--ink-70)}
+.pdf-td-num{font-size:11px;color:var(--ink-40);text-align:right}
+.pdf-td-price{font-size:11px;font-weight:500;color:var(--ink);text-align:right}
+.pdf-section-row{display:grid;grid-template-columns:1fr 50px 70px 70px;gap:8px;padding:6px 12px;background:#f3efe8}
+.pdf-section-name{font-size:10px;font-weight:600;color:var(--ink);letter-spacing:.04em;text-transform:uppercase}
+.pdf-total-row{display:flex;align-items:center;justify-content:space-between;margin-top:16px;padding:14px 16px;background:var(--ink);border-radius:8px}
+.pdf-total-label{font-size:11px;color:rgba(250,247,242,.5)}
+.pdf-total-value{font-family:'Fraunces',serif;font-size:20px;font-weight:500;color:var(--cream);letter-spacing:-.02em}
+.pdf-footer{margin-top:20px;display:flex;align-items:flex-end;justify-content:space-between}
+.pdf-qr{width:52px;height:52px;background:#f0ece6;border-radius:6px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.pdf-disclaimer{font-size:9px;color:#bbb;max-width:280px;line-height:1.5}
+.pdf-stamp{padding:6px 14px;border:2px solid var(--green);border-radius:6px;color:var(--green);font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;transform:rotate(-8deg)}
+.pdf-export-btn{display:flex;align-items:center;justify-content:center;gap:10px;padding:14px;background:var(--accent);border:none;cursor:none;width:100%;margin-top:16px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;color:#fff;transition:all .2s}
+.pdf-export-btn:hover{background:var(--accent-2);transform:translateY(-1px)}
+
+/* OVERRUN SECTION */
+.overrun-section{background:var(--cream);padding:100px 52px}
+.overrun-inner{max-width:1100px;margin:0 auto}
+.overrun-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;margin-top:60px}
+.overrun-stat{text-align:center;padding:40px;background:var(--dark);border-radius:var(--rl);position:relative;overflow:hidden}
+.overrun-stat::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 50% at 50% 80%,rgba(201,98,42,.12),transparent)}
+.overrun-big{font-family:'Fraunces',serif;font-size:100px;font-weight:700;color:var(--accent);line-height:1;letter-spacing:-.05em}
+.overrun-label{font-size:16px;font-weight:300;color:rgba(250,247,242,.5);margin-top:8px}
+.overrun-sub{font-size:13px;color:rgba(250,247,242,.25);margin-top:6px}
+.cashflow-demo{background:var(--cream-2);border:1px solid var(--border);border-radius:var(--rl);padding:32px;overflow:hidden}
+.cashflow-title{font-size:13px;font-weight:500;color:var(--ink);margin-bottom:8px}
+.cashflow-sub{font-size:12px;color:var(--ink-40);margin-bottom:24px}
+.cashflow-bars{display:flex;flex-direction:column;gap:14px}
+.cf-phase{display:flex;align-items:center;gap:14px}
+.cf-label{font-size:12px;font-weight:400;color:var(--ink-70);width:120px;flex-shrink:0}
+.cf-bar-wrap{flex:1;height:28px;background:rgba(13,13,11,.06);border-radius:6px;overflow:hidden;position:relative}
+.cf-bar{height:100%;border-radius:6px;display:flex;align-items:center;padding:0 10px;transition:width 1.5s cubic-bezier(.2,.8,.2,1)}
+.cf-bar-label{font-size:11px;font-weight:600;color:#fff;white-space:nowrap}
+.cf-amount{font-size:12px;font-weight:600;color:var(--ink);width:80px;text-align:right;flex-shrink:0}
+.cashflow-total{margin-top:20px;padding:14px 16px;background:var(--ink);border-radius:10px;display:flex;align-items:center;justify-content:space-between}
+.ct-label{font-size:12px;color:rgba(250,247,242,.4)}
+.ct-value{font-family:'Fraunces',serif;font-size:20px;font-weight:500;color:var(--cream)}
+.predictor-note{margin-top:16px;padding:14px 16px;background:rgba(201,162,39,.08);border:1px solid rgba(201,162,39,.2);border-radius:10px;display:flex;align-items:flex-start;gap:10px}
+.predictor-note svg{flex-shrink:0;margin-top:1px}
+.predictor-note-text{font-size:12.5px;color:var(--ink-70);line-height:1.6}
+.predictor-note-text strong{color:var(--ink);font-weight:500}
+
+/* TESTIMONIALS */
+.testi-section{background:var(--cream-2);padding:100px 52px}
+.testi-inner{max-width:1100px;margin:0 auto}
+.testi-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-top:60px}
+.testi-card{background:var(--cream);border:1px solid var(--border);border-radius:var(--rl);padding:36px;transition:transform .3s,box-shadow .3s}
+.testi-card:hover{transform:translateY(-4px);box-shadow:var(--shm)}
+.testi-stars{display:flex;gap:3px;margin-bottom:18px}
+.testi-star{color:var(--gold);font-size:13px}
+.testi-text{font-size:14.5px;font-weight:300;line-height:1.72;color:var(--ink);margin-bottom:24px;font-style:italic}
+.testi-author{display:flex;align-items:center;gap:12px}
+.testi-av{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#fff;flex-shrink:0}
+.testi-name{font-size:13px;font-weight:500;color:var(--ink)}
+.testi-role{font-size:11.5px;color:var(--ink-40)}
+
+/* PRICING */
+.pricing-section{background:var(--dark);padding:100px 52px}
+.pricing-inner{max-width:1100px;margin:0 auto}
+.pricing-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-top:60px;align-items:start}
+.price-card{border:1px solid var(--border-dark);border-radius:var(--rl);padding:40px 36px;background:var(--dark-2);transition:transform .3s,box-shadow .3s;position:relative}
+.price-card:hover{transform:translateY(-4px);box-shadow:0 12px 48px rgba(0,0,0,.3)}
+.price-card.feat{background:var(--cream);border-color:transparent}
+.price-card.feat .price-tier{color:var(--ink-40)}
+.price-card.feat .price-price{color:var(--ink)}
+.price-card.feat .price-unit{color:var(--ink-40)}
+.price-card.feat .price-feat{color:var(--ink-70)}
+.price-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:4px 16px;border-radius:100px;white-space:nowrap}
+.price-tier{font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:rgba(250,247,242,.35);margin-bottom:14px}
+.price-price{font-family:'Fraunces',serif;font-size:44px;font-weight:500;color:var(--cream);letter-spacing:-.03em;line-height:1;margin-bottom:4px}
+.price-unit{font-size:13px;color:rgba(250,247,242,.3);margin-bottom:28px}
+.price-div{height:1px;background:rgba(255,255,255,.07);margin-bottom:28px}
+.price-card.feat .price-div{background:var(--border)}
+.price-feats{list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:32px}
+.price-feat{display:flex;align-items:flex-start;gap:9px;font-size:13px;font-weight:300;color:rgba(250,247,242,.6);line-height:1.5}
+.pfc{width:16px;height:16px;border-radius:50%;background:rgba(201,98,42,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.pfc svg{width:8px;height:8px}
+.btn-p{font-family:'DM Sans',sans-serif;font-size:13.5px;font-weight:500;width:100%;padding:13px;border-radius:9px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:rgba(250,247,242,.7);cursor:none;text-align:center;transition:all .2s;text-decoration:none;display:block}
+.btn-p:hover{background:rgba(255,255,255,.1);color:var(--cream)}
+.btn-pf{font-family:'DM Sans',sans-serif;font-size:13.5px;font-weight:500;width:100%;padding:13px;border-radius:9px;border:none;background:var(--accent);color:#fff;cursor:none;text-align:center;transition:all .2s;text-decoration:none;display:block}
+.btn-pf:hover{background:var(--accent-2);transform:translateY(-1px);box-shadow:0 6px 20px rgba(201,98,42,.3)}
+
+/* FINAL CTA */
+.final-cta{background:var(--dark);padding:140px 52px;text-align:center;position:relative;overflow:hidden}
+.final-cta::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 70% at 50% 50%,rgba(201,98,42,.09),transparent 65%);pointer-events:none}
+.final-cta canvas{position:absolute;inset:0;width:100%!important;height:100%!important;opacity:.35}
+.final-cta-inner{position:relative;z-index:2}
+.cta-title{font-family:'Fraunces',serif;font-size:clamp(44px,5.5vw,80px);font-weight:500;line-height:1.06;letter-spacing:-.04em;color:var(--cream);max-width:680px;margin:0 auto 20px}
+.cta-title em{font-style:italic;color:var(--accent);font-weight:300}
+.cta-sub{font-size:17px;font-weight:300;color:rgba(250,247,242,.4);max-width:420px;margin:0 auto 44px;line-height:1.65}
+.cta-actions{display:flex;align-items:center;justify-content:center;gap:14px}
+.cta-note{margin-top:20px;font-size:12px;color:rgba(250,247,242,.2)}
+
+/* FOOTER */
+footer{background:var(--dark);border-top:1px solid var(--border-dark);padding:40px 52px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px}
+.footer-logo{font-family:'Fraunces',serif;font-size:15px;color:rgba(250,247,242,.4);text-decoration:none;font-weight:500}
+.footer-logo span{color:var(--accent)}
+.footer-links{display:flex;gap:24px}
+.footer-links a{font-size:12.5px;color:rgba(250,247,242,.22);text-decoration:none;transition:color .2s}
+.footer-links a:hover{color:rgba(250,247,242,.5)}
+.footer-copy{font-size:12px;color:rgba(250,247,242,.18)}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease}
+.reveal.in{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:.1s}
+.reveal-delay-2{transition-delay:.2s}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+@keyframes floatCard{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(201,98,42,.4)}50%{opacity:.7;box-shadow:0 0 0 4px rgba(201,98,42,0)}}
+
+@media(max-width:960px){
+  nav{padding:0 20px}.nav-links{display:none}
+  section,div.problem,div.plan-showcase-inner,div.persona-section,div.estimator-section,div.overrun-section,div.testi-section,div.pricing-section,div.final-cta{padding:72px 24px!important}
+  .hero{padding:100px 24px 60px!important}
+  .demo-content{grid-template-columns:1fr;min-height:auto}
+  .demo-plan-side{height:280px}
+  .demo-3d-side{height:280px}
+  .plan-showcase-top,.persona-content,.overrun-grid,.estimator-demo{grid-template-columns:1fr!important;gap:40px!important}
+  .problem-grid,.testi-grid,.pricing-grid{grid-template-columns:1fr!important}
+  footer{flex-direction:column;text-align:center}
+}
+</style>
+</head>
+<body>
+
+<div id="grain"></div>
+<div id="cur"></div>
+<div id="cur-ring"></div>
+
+<!-- ══════════════════════════════ NAVBAR ══════════════════════════════════ -->
+<nav id="nav">
+  <a href="#" class="logo">
+    <div class="logo-mark">
+      <svg viewBox="0 0 16 16" fill="none">
+        <path d="M3 13L8 3L13 13" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M5.5 10H10.5" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <span class="logo-text">Ghana<span>AI</span> Estimator</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#plan">Plan Reader</a></li>
+    <li><a href="#estimator">Estimator</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+  </ul>
+  <div class="nav-right">
+    <a href="#" class="btn-ghost">Sign in</a>
+    <a href="#" class="btn-primary">Start free</a>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════ HERO ════════════════════════════════════ -->
+<section class="hero" id="hero">
+  <div class="hero-eyebrow">Built for Ghana · Free to start</div>
+  <h1>Your house plan,<br>explained and <em>priced</em><br>in 8 seconds</h1>
+  <p class="hero-sub">Upload any plan. Get a full material estimate in real Ghana prices — from actual suppliers in Accra, Kumasi, and Takoradi.</p>
+  <div class="hero-actions">
+    <a href="#plan" class="btn-hero">Try the plan reader</a>
+    <a href="#estimator" class="btn-hero-ghost">Build your own estimate</a>
+  </div>
+  <div class="hero-trust"><span>12,000+</span> plans analyzed · <span>GHS 2.1B</span> estimated · <span>96.2%</span> accuracy</div>
+
+  <!-- BIG HERO DEMO FRAME -->
+  <div class="hero-demo">
+    <div class="demo-frame">
+      <div class="demo-frame-bar">
+        <div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div>
+        <div class="demo-frame-title">Ghana AI Estimator — Plan Reader</div>
+        <div class="demo-frame-badge">Live Demo</div>
+      </div>
+      <div class="demo-content">
+        <!-- LEFT: Architectural Plan Drawing -->
+        <div class="demo-plan-side" id="planSide">
+          <div class="plan-mode-label">2D Floor Plan</div>
+          <canvas class="plan-canvas" id="heroPlanCanvas"></canvas>
+          <!-- Floating card on plan side -->
+          <div class="float-card-light" style="bottom:20px;left:20px;animation:floatCard 3.5s ease-in-out infinite">
+            <div class="fc-label-light">AI reading plan...</div>
+            <div class="fc-value-light">3-Bed Bungalow · 148m²</div>
+            <div class="fc-sub-light" id="aiReadingStatus">Analyzing dimensions...</div>
+          </div>
+        </div>
+        <!-- RIGHT: 3D View -->
+        <div class="demo-3d-side" id="hero3dSide">
+          <div class="plan-mode-label-3d" id="hero3dLabel">3D Walkthrough</div>
+          <canvas id="hero3dCanvas"></canvas>
+          <div class="float-card" style="bottom:20px;right:20px;animation:floatCard 4s 1s ease-in-out infinite">
+            <div class="fc-label">Total estimate</div>
+            <div class="fc-value">GHS 143,800</div>
+            <div class="fc-sub">Accra · 2026 prices</div>
+          </div>
+          <div class="float-card" style="top:56px;right:20px;animation:floatCard 4s 2.5s ease-in-out infinite">
+            <div style="display:flex;align-items:center;gap:7px">
+              <div style="width:7px;height:7px;border-radius:50%;background:#4caf76;box-shadow:0 0 8px #4caf76"></div>
+              <span style="font-size:11px;color:rgba(250,247,242,.6)">AI confidence: <strong style="color:#4caf76">96.2%</strong></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="demo-tabs">
+        <button class="demo-tab active" onclick="switchTab(this,0)">Floor Plan</button>
+        <button class="demo-tab" onclick="switchTab(this,1)">3D Walkthrough</button>
+        <button class="demo-tab" onclick="switchTab(this,2)">Bill of Quantities</button>
+        <button class="demo-tab" onclick="switchTab(this,3)">PDF Export</button>
+        <button class="demo-tab" onclick="switchTab(this,4)">Price Alerts</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker-label">Live Ghana Prices</div>
+  <div style="overflow:hidden;flex:1">
+    <div class="ticker-track">
+      <div class="ticker-item"><span class="t-name">Dangote Cement 50kg</span><span class="t-price">GHS 78</span><span class="t-up">▲2.3%</span></div>
+      <div class="ticker-item"><span class="t-name">Iron Rods 12mm (tonne)</span><span class="t-price">GHS 3,840</span><span class="t-dn">▼0.8%</span></div>
+      <div class="ticker-item"><span class="t-name">Sandcrete Blocks 6"</span><span class="t-price">GHS 6.50</span><span class="t-up">▲4.1%</span></div>
+      <div class="ticker-item"><span class="t-name">Ghacem Supaset 50kg</span><span class="t-price">GHS 82</span><span class="t-up">▲1.2%</span></div>
+      <div class="ticker-item"><span class="t-name">Plywood 18mm sheet</span><span class="t-price">GHS 195</span><span class="t-dn">▼1.5%</span></div>
+      <div class="ticker-item"><span class="t-name">Roofing Sheets 26g</span><span class="t-price">GHS 340</span><span class="t-up">▲3.7%</span></div>
+      <div class="ticker-item"><span class="t-name">PVC Pipes 4"</span><span class="t-price">GHS 48</span><span class="t-up">▲0.4%</span></div>
+      <div class="ticker-item"><span class="t-name">Binding Wire 25kg</span><span class="t-price">GHS 420</span><span class="t-dn">▼2.1%</span></div>
+      <div class="ticker-item"><span class="t-name">River Sand (tipper)</span><span class="t-price">GHS 520</span><span class="t-up">▲1.8%</span></div>
+      <div class="ticker-item"><span class="t-name">Granite (tipper)</span><span class="t-price">GHS 680</span><span class="t-up">▲0.9%</span></div>
+      <!-- duplicates -->
+      <div class="ticker-item"><span class="t-name">Dangote Cement 50kg</span><span class="t-price">GHS 78</span><span class="t-up">▲2.3%</span></div>
+      <div class="ticker-item"><span class="t-name">Iron Rods 12mm (tonne)</span><span class="t-price">GHS 3,840</span><span class="t-dn">▼0.8%</span></div>
+      <div class="ticker-item"><span class="t-name">Sandcrete Blocks 6"</span><span class="t-price">GHS 6.50</span><span class="t-up">▲4.1%</span></div>
+      <div class="ticker-item"><span class="t-name">Ghacem Supaset 50kg</span><span class="t-price">GHS 82</span><span class="t-up">▲1.2%</span></div>
+      <div class="ticker-item"><span class="t-name">Plywood 18mm sheet</span><span class="t-price">GHS 195</span><span class="t-dn">▼1.5%</span></div>
+      <div class="ticker-item"><span class="t-name">Roofing Sheets 26g</span><span class="t-price">GHS 340</span><span class="t-up">▲3.7%</span></div>
+      <div class="ticker-item"><span class="t-name">PVC Pipes 4"</span><span class="t-price">GHS 48</span><span class="t-up">▲0.4%</span></div>
+      <div class="ticker-item"><span class="t-name">Binding Wire 25kg</span><span class="t-price">GHS 420</span><span class="t-dn">▼2.1%</span></div>
+      <div class="ticker-item"><span class="t-name">River Sand (tipper)</span><span class="t-price">GHS 520</span><span class="t-up">▲1.8%</span></div>
+      <div class="ticker-item"><span class="t-name">Granite (tipper)</span><span class="t-price">GHS 680</span><span class="t-up">▲0.9%</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════ PROBLEM ═════════════════════════════════ -->
+<div class="problem" id="problem">
+  <div class="problem-inner">
+    <div class="reveal">
+      <div class="eyebrow" style="color:var(--accent-2)">The real problem</div>
+      <h2 style="font-family:'Fraunces',serif;font-size:clamp(32px,3.8vw,52px);font-weight:500;line-height:1.1;letter-spacing:-.028em;color:var(--cream);max-width:560px;margin-bottom:18px">Building in Ghana is a financial <em style="font-style:italic;color:var(--accent)">blind spot</em></h2>
+      <p style="font-size:16px;font-weight:300;line-height:1.7;color:rgba(250,247,242,.4);max-width:500px">Most families start building with a guess. The money runs out. The house sits unfinished for years.</p>
+    </div>
+    <div class="problem-grid reveal">
+      <div class="prob-card">
+        <div class="prob-num"><span class="counter" data-target="1.8" data-suffix="M">0</span></div>
+        <div class="prob-title">Housing shortfall</div>
+        <div class="prob-text">Ghana needs 250,000 new homes every year. Most families build without any professional cost support whatsoever.</div>
+      </div>
+      <div class="prob-card">
+        <div class="prob-num"><span class="counter" data-target="98" data-suffix="%">0</span></div>
+        <div class="prob-title">Informal quote gap</div>
+        <div class="prob-text">A mason's verbal quote can miss up to 98% of true costs. Labor, ceiling, electrics, finishing — none of it included.</div>
+      </div>
+      <div class="prob-card">
+        <div class="prob-num"><span class="counter" data-target="67" data-suffix="%">0</span></div>
+        <div class="prob-title">Builds go over budget</div>
+        <div class="prob-text">67% of Ghanaian self-builds exceed their original budget. Ghana AI Estimator users have a 4% overrun rate.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════ PLAN SHOWCASE ═══════════════════════════ -->
+<div class="plan-showcase" id="plan">
+  <div class="plan-showcase-inner">
+    <div class="plan-showcase-top">
+      <div class="reveal">
+        <div class="eyebrow">Architectural Plan Reader</div>
+        <h2 class="sec-title">A plan drawn like an architect. Read by AI.</h2>
+        <p class="sec-sub">Upload a photo of any plan — sketch or PDF. We draw it properly, dimension it, then price every single element.</p>
+        <div class="plan-stats">
+          <div class="plan-stat">
+            <div class="plan-stat-icon"><svg viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M4 8h8M8 4v8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></div>
+            <div class="plan-stat-text"><strong>Proper architectural symbols</strong> — door swings, window breaks, wall hatching, north arrow, title block</div>
+          </div>
+          <div class="plan-stat">
+            <div class="plan-stat-icon"><svg viewBox="0 0 16 16" fill="none"><path d="M2 14L8 2L14 14" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.5 10.5H11.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></div>
+            <div class="plan-stat-text"><strong>Real dimensions extracted</strong> — Tesseract OCR reads "12'0" and "3.6m" from any photo, even hand-drawn</div>
+          </div>
+          <div class="plan-stat">
+            <div class="plan-stat-icon"><svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.3"/><path d="M5 8l2 2 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></div>
+            <div class="plan-stat-text"><strong>Export DXF for AutoCAD</strong> — or PNG for WhatsApp. GHS 50 vs GHS 800 to a draftsman.</div>
+          </div>
+        </div>
+      </div>
+      <div class="reveal reveal-delay-1" style="display:flex;flex-direction:column;gap:14px">
+        <div style="background:var(--cream-2);border:1px solid var(--border);border-radius:var(--r);padding:16px 20px">
+          <div style="font-size:11px;font-weight:500;color:var(--accent);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px">Plan Analysis — 8.4s</div>
+          <div style="font-size:13.5px;font-weight:300;color:var(--ink-70);line-height:1.65" id="aiAnalysisText">This 3-bedroom bungalow has a total built area of approximately 148m². The master bedroom has a private ensuite. Living and dining flow is well-proportioned. The kitchen has direct service yard access. <span style="color:var(--accent)">One issue flagged:</span> the passage width between Bedroom 2 and the bathroom may be tight at the current dimension — recommend widening by 0.3m.</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div style="background:var(--cream-2);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px">
+            <div style="font-size:10px;color:var(--ink-40);margin-bottom:4px">Total area</div>
+            <div style="font-family:'Fraunces',serif;font-size:22px;font-weight:500;color:var(--ink)">148 m²</div>
+          </div>
+          <div style="background:var(--cream-2);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px">
+            <div style="font-size:10px;color:var(--ink-40);margin-bottom:4px">Rooms detected</div>
+            <div style="font-family:'Fraunces',serif;font-size:22px;font-weight:500;color:var(--ink)">8 rooms</div>
+          </div>
+          <div style="background:var(--cream-2);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px">
+            <div style="font-size:10px;color:var(--ink-40);margin-bottom:4px">Issues flagged</div>
+            <div style="font-family:'Fraunces',serif;font-size:22px;font-weight:500;color:var(--accent)">1 warning</div>
+          </div>
+          <div style="background:var(--cream-2);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px">
+            <div style="font-size:10px;color:var(--ink-40);margin-bottom:4px">Estimate</div>
+            <div style="font-family:'Fraunces',serif;font-size:22px;font-weight:500;color:var(--ink)">GHS 143k</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BIG PLAN DRAWING -->
+    <div class="plan-big-frame reveal">
+      <canvas class="plan-big-canvas" id="bigPlanCanvas" height="520"></canvas>
+      <div class="plan-controls">
+        <div class="plan-ctrl-left">
+          <button class="plan-btn active" id="btn2d" onclick="setPlanMode('2d')">2D Floor Plan</button>
+          <button class="plan-btn" id="btn3d" onclick="setPlanMode('3d')">3D View</button>
+          <button class="plan-btn" id="btnSite" onclick="setPlanMode('site')">Site Plan</button>
+        </div>
+        <div class="plan-ctrl-right">
+          <span class="plan-scale">Scale 1:100 · A3</span>
+          <button class="plan-btn-export">Export DXF</button>
+          <button class="plan-btn-export" style="background:var(--ink)">Download PDF</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3D LIFT -->
+    <div class="lift-frame reveal" id="liftSection">
+      <div class="lift-canvas-wrap">
+        <canvas id="liftCanvas"></canvas>
+        <div class="lift-hint">Drag to orbit · Scroll to zoom</div>
+        <div class="lift-badge">
+          <div class="lift-badge-icon">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 12L7 2L12 12" stroke="#c9622a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 9H10" stroke="#c9622a" stroke-width="1.3" stroke-linecap="round"/></svg>
+          </div>
+          <div>
+            <div class="lift-badge-num">GHS 143,800</div>
+            <div class="lift-badge-label">Full estimate · 47 line items</div>
+          </div>
+        </div>
+        <div class="lift-badge-2">
+          <div style="width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);flex-shrink:0"></div>
+          <span style="font-size:11px;color:rgba(250,247,242,.55)">Plan-to-3D · live</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════ PERSONA TOGGLE ══════════════════════════ -->
+<div class="persona-section" id="personas">
+  <div class="persona-inner">
+    <div class="reveal" style="text-align:center">
+      <div class="eyebrow" style="justify-content:center">Built for everyone</div>
+      <h2 class="sec-title" style="text-align:center">Whether you're building your home<br>or running a construction firm</h2>
+    </div>
+    <div class="persona-toggle-wrap reveal">
+      <div class="persona-toggle">
+        <button class="persona-btn active" onclick="setPersona('homeowner')">I'm building my home</button>
+        <button class="persona-btn" onclick="setPersona('contractor')">I'm a contractor</button>
+        <button class="persona-btn" onclick="setPersona('diaspora')">I'm in the diaspora</button>
+      </div>
+    </div>
+
+    <!-- HOMEOWNER -->
+    <div class="persona-content active" id="persona-homeowner">
+      <div class="reveal">
+        <div class="eyebrow">For homeowners</div>
+        <h3 style="font-family:'Fraunces',serif;font-size:36px;font-weight:500;color:var(--ink);letter-spacing:-.025em;margin-bottom:14px">Stop guessing.<br>Start knowing.</h3>
+        <p style="font-size:15px;font-weight:300;color:var(--ink-40);line-height:1.7;max-width:420px;margin-bottom:28px">You don't need an architect to understand your plan. You need to know if you can afford it — before you break ground.</p>
+        <div class="persona-features">
+          <div class="persona-feat"><div class="pf-icon"><svg viewBox="0 0 17 17" fill="none"><path d="M2 15L8.5 2L15 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M4.5 11H12.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></div><div><div class="pf-title">Plan explained in plain English + Twi</div><div class="pf-text">Know exactly what you're building before you start</div></div></div>
+          <div class="persona-feat"><div class="pf-icon"><svg viewBox="0 0 17 17" fill="none"><rect x="2" y="3" width="13" height="11" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M2 7h13" stroke="currentColor" stroke-width="1.2"/><path d="M6 3V7M11 3V7" stroke="currentColor" stroke-width="1.2"/></svg></div><div><div class="pf-title">"Will I run out of money?" predictor</div><div class="pf-text">Phased building plan — what you can build now vs. later</div></div></div>
+          <div class="persona-feat"><div class="pf-icon"><svg viewBox="0 0 17 17" fill="none"><circle cx="8.5" cy="8.5" r="6" stroke="currentColor" stroke-width="1.4"/><path d="M5.5 8.5l2 2 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div><div><div class="pf-title">Land fit check before you buy</div><div class="pf-text">See if your plan fits your plot — saves the GHS 30k mistake</div></div></div>
+        </div>
+      </div>
+      <div class="reveal reveal-delay-1">
+        <div class="persona-visual">
+          <canvas id="personaCanvas1"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTRACTOR -->
+    <div class="persona-content" id="persona-contractor">
+      <div class="reveal">
+        <div class="eyebrow">For contractors</div>
+        <h3 style="font-family:'Fraunces',serif;font-size:36px;font-weight:500;color:var(--ink);letter-spacing:-.025em;margin-bottom:14px">Quote faster.<br>Win more jobs.</h3>
+        <p style="font-size:15px;font-weight:300;color:var(--ink-40);line-height:1.7;max-width:420px;margin-bottom:28px">Stop losing quotes in WhatsApp. Send a professional PDF with your logo in 2 minutes. Look like a big company, not a guy with Excel.</p>
+        <div class="persona-features">
+          <div class="persona-feat"><div class="pf-icon"><svg viewBox="0 0 17 17" fill="none"><rect x="2" y="2" width="13" height="13" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M5 6.5H12M5 8.5H12M5 10.5H9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></div><div><div class="pf-title">Branded PDF with your logo</div><div class="pf-text">QR code, validity stamp, BOQ table, 3D render — in 2 clicks</div></div></div>
+          <div class="persona-feat"><div class="pf-icon"><svg viewBox="0 0 17 17" fill="none"><path d="M3 5h11M3 8.5h11M3 12h7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div><div><div class="pf-title">Project dashboard — your CRM</div><div class="pf-text">12 projects, side-by-side cost comparison, client names, profit margins</div></div></div>
+          <div class="persona-feat"><div class="pf-icon"><svg viewBox="0 0 17 17" fill="none"><path d="M8.5 2v5l3 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="8.5" cy="9" r="6.5" stroke="currentColor" stroke-width="1.3"/></svg></div><div><div class="pf-title">Price alerts — cement up GHS 3</div><div class="pf-text">Update your quote before your client asks why it changed</div></div></div>
+          <div class="persona-feat"><div class="pf-icon"><svg viewBox="0 0 17 17" fill="none"><path d="M2 9l4 4 9-9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div><div class="pf-title">Multi-user team roles</div><div class="pf-text">Foreman estimates on site, boss approves in office — GHS 149/mo</div></div></div>
+        </div>
+      </div>
+      <div class="reveal reveal-delay-1">
+        <div class="persona-visual">
+          <canvas id="personaCanvas2"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- DIASPORA -->
+    <div class="persona-content" id="persona-diaspora">
+      <div class="reveal">
+        <div class="eyebrow">For the diaspora</div>
+        <h3 style="font-family:'Fraunces',serif;font-size:36px;font-weight:500;color:var(--ink);letter-spacing:-.025em;margin-bottom:14px">Build from abroad.<br>Know every pesewa.</h3>
+        <p style="font-size:15px;font-weight:300;color:var(--ink-40);line-height:1.7;max-width:420px;margin-bottom:28px">You're in London. Your family is building in Accra. You have no idea what's happening on site. That ends now.</p>
+        <div class="persona-features">
+          <div class="persona-feat"><div class="pf-icon"><svg viewBox="0 0 17 17" fill="none"><circle cx="8.5" cy="6.5" r="3" stroke="currentColor" stroke-width="1.4"/><path d="M2.5 14.5C2.5 11.7 5.2 9.5 8.5 9.5s6 2.2 6 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div><div><div class="pf-title">Live site progress — from your phone</div><div class="pf-text">Weekly photos from site, AI checks completion %, flags issues</div></div></div>
+          <div class="persona-feat"><div class="pf-icon"><svg viewBox="0 0 17 17" fill="none"><rect x="3" y="2" width="11" height="13" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M6 6h5M6 8.5h5M6 11h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></div><div><div class="pf-title">Pay artisans directly from abroad</div><div class="pf-text">Paystack split — you release funds when stage is complete</div></div></div>
+          <div class="persona-feat"><div class="pf-icon"><svg viewBox="0 0 17 17" fill="none"><path d="M2 8.5C2 5 5 2.5 8.5 2.5S15 5 15 8.5s-3 6-6.5 6c-1.2 0-2.3-.3-3.2-.8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M3 11L5 9.5L7 11L5 13" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div><div class="pf-title">Prices in GBP, USD, or EUR</div><div class="pf-text">See exactly what you're sending before you send it</div></div></div>
+        </div>
+      </div>
+      <div class="reveal reveal-delay-1">
+        <div class="persona-visual" style="background:var(--dark);padding:32px">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+            <div style="background:var(--dark-2);border:1px solid var(--border-dark);border-radius:var(--r);padding:16px">
+              <div style="font-size:10px;color:rgba(250,247,242,.3);margin-bottom:8px;letter-spacing:.05em;text-transform:uppercase">You're sending</div>
+              <div style="font-family:'Fraunces',serif;font-size:24px;font-weight:500;color:var(--cream)">£8,200</div>
+              <div style="font-size:11px;color:rgba(250,247,242,.3);margin-top:4px">= GHS 143,800</div>
+              <div style="height:3px;background:rgba(255,255,255,.06);border-radius:2px;margin-top:12px;overflow:hidden"><div style="width:68%;height:100%;background:var(--accent);border-radius:2px"></div></div>
+              <div style="font-size:10px;color:rgba(250,247,242,.3);margin-top:6px">68% of total budget used</div>
+            </div>
+            <div style="background:var(--dark-2);border:1px solid var(--border-dark);border-radius:var(--r);padding:16px">
+              <div style="font-size:10px;color:rgba(250,247,242,.3);margin-bottom:8px;letter-spacing:.05em;text-transform:uppercase">Site progress</div>
+              <div style="font-family:'Fraunces',serif;font-size:24px;font-weight:500;color:var(--green)">72%</div>
+              <div style="font-size:11px;color:rgba(250,247,242,.3);margin-top:4px">Roofing complete</div>
+              <div style="height:3px;background:rgba(255,255,255,.06);border-radius:2px;margin-top:12px;overflow:hidden"><div style="width:72%;height:100%;background:var(--green);border-radius:2px"></div></div>
+              <div style="font-size:10px;color:rgba(250,247,242,.3);margin-top:6px">AI verified · 2 days ago</div>
+            </div>
+            <div style="background:var(--dark-2);border:1px solid var(--border-dark);border-radius:var(--r);padding:16px;grid-column:span 2">
+              <div style="font-size:10px;color:rgba(250,247,242,.3);margin-bottom:10px;letter-spacing:.05em;text-transform:uppercase">Next payment due</div>
+              <div style="display:flex;align-items:center;justify-content:space-between">
+                <div><div style="font-size:13px;color:rgba(250,247,242,.7)">Plastering — Week 8</div><div style="font-size:11px;color:rgba(250,247,242,.3);margin-top:2px">Release when 80% complete</div></div>
+                <div style="background:var(--accent);color:#fff;font-size:12px;font-weight:500;padding:8px 16px;border-radius:8px;cursor:none">Release £1,800</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════ CUSTOM ESTIMATOR ═════════════════════════ -->
+<div class="estimator-section" id="estimator">
+  <div class="estimator-inner">
+    <div class="reveal">
+      <div class="eyebrow" style="color:var(--accent-2)">Custom Build Estimator</div>
+      <h2 style="font-family:'Fraunces',serif;font-size:clamp(32px,3.8vw,52px);font-weight:500;line-height:1.1;letter-spacing:-.028em;color:var(--cream);max-width:620px;margin-bottom:18px">Build your own quote.<br>Export a <em style="font-style:italic;color:var(--accent)">beautiful PDF.</em></h2>
+      <p style="font-size:16px;font-weight:300;line-height:1.7;color:rgba(250,247,242,.4);max-width:520px">Your prices. Your items. Your logo. A professional document your client will trust — built in 2 minutes, not 2 days.</p>
+    </div>
+    <div class="estimator-demo reveal">
+      <!-- LEFT: Live BOQ Builder -->
+      <div class="est-panel">
+        <div class="est-panel-header">
+          <span class="est-panel-title">3-Bedroom House · Tema · Kwame Osei Construction</span>
+          <span class="est-panel-badge">Live Builder</span>
+        </div>
+        <div class="est-body" id="estBody">
+          <!-- Foundation Section -->
+          <div class="est-section-header">
+            <span class="est-section-label">Foundation</span>
+            <span class="est-section-total">GHS 30,500</span>
+          </div>
+          <div class="est-row"><span class="est-item-name">Excavation & Earthwork</span><span class="est-qty">1 lot</span><span class="est-rate">GHS 8,400</span><span class="est-total">GHS 8,400</span></div>
+          <div class="est-row"><span class="est-item-name">Concrete Strip Foundation</span><span class="est-qty">18.4 m³</span><span class="est-rate">GHS 1,200</span><span class="est-total">GHS 22,100</span></div>
+          <div class="est-add-row"><div class="est-add-btn"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 2v6M2 5h6" stroke="#8a8a80" stroke-width="1.2" stroke-linecap="round"/></svg></div><span class="est-add-text">Add item to Foundation</span></div>
+
+          <!-- Blockwork Section -->
+          <div class="est-section-header" style="margin-top:12px">
+            <span class="est-section-label">Blockwork</span>
+            <span class="est-section-total">GHS 45,900</span>
+          </div>
+          <div class="est-row"><span class="est-item-name">Sandcrete Blocks (6")</span><span class="est-qty">4,200 pcs</span><span class="est-rate">GHS 6.50</span><span class="est-total">GHS 27,300</span></div>
+          <div class="est-row"><span class="est-item-name">Reinforcement Steel 12mm</span><span class="est-qty">2.8 t</span><span class="est-rate">GHS 3,840</span><span class="est-total">GHS 10,752</span></div>
+          <div class="est-row"><span class="est-item-name">Cement (binding)</span><span class="est-qty">84 bags</span><span class="est-rate">GHS 78</span><span class="est-total">GHS 6,552</span></div>
+          <div class="est-row" id="animRow" style="opacity:0"><span class="est-item-name">Labour — Blockwork</span><span class="est-qty">1 lot</span><span class="est-rate">GHS 1,296</span><span class="est-total">GHS 1,296</span></div>
+          <div class="est-add-row"><div class="est-add-btn"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 2v6M2 5h6" stroke="#8a8a80" stroke-width="1.2" stroke-linecap="round"/></svg></div><span class="est-add-text">Add item to Blockwork</span></div>
+
+          <!-- Roofing -->
+          <div class="est-section-header" style="margin-top:12px">
+            <span class="est-section-label">Roofing</span>
+            <span class="est-section-total">GHS 34,200</span>
+          </div>
+          <div class="est-row"><span class="est-item-name">Roof Trusses (timber)</span><span class="est-qty">1 lot</span><span class="est-rate">GHS 12,000</span><span class="est-total">GHS 12,000</span></div>
+          <div class="est-row"><span class="est-item-name">Roofing Sheets (26g)</span><span class="est-qty">64 sheets</span><span class="est-rate">GHS 340</span><span class="est-total">GHS 21,760</span></div>
+          <div class="est-row"><span class="est-item-name">Ridging & Fixings</span><span class="est-qty">1 lot</span><span class="est-rate">GHS 440</span><span class="est-total">GHS 440</span></div>
+        </div>
+        <div class="est-grand-total">
+          <span class="est-gt-label">Total (excl. labour & finishing)</span>
+          <span class="est-gt-value">GHS 110,600</span>
+        </div>
+      </div>
+
+      <!-- RIGHT: PDF Preview -->
+      <div class="pdf-preview">
+        <div class="pdf-inner">
+          <div class="pdf-header">
+            <div class="pdf-logo-area">
+              <div class="pdf-logo-placeholder"><span>KO BUILD</span></div>
+              <div class="pdf-company">Kwame Osei Construction Ltd · Tema</div>
+              <div style="font-size:9px;color:var(--ink-40);margin-top:2px">0244 123 456 · kwameosei@build.gh</div>
+            </div>
+            <div class="pdf-doc-info">
+              <div class="pdf-doc-title">Bill of Quantities</div>
+              <div class="pdf-doc-ref">Ref: KOB-2026-034</div>
+              <div class="pdf-valid">Valid for 14 days · Expires June 17, 2026</div>
+            </div>
+          </div>
+          <div class="pdf-project-info">
+            <div class="pdf-info-block"><div class="pdf-info-label">Client</div><div class="pdf-info-value">Mr. Emmanuel Asante</div></div>
+            <div class="pdf-info-block"><div class="pdf-info-label">Project</div><div class="pdf-info-value">3-Bed Bungalow, Tema</div></div>
+            <div class="pdf-info-block"><div class="pdf-info-label">Date</div><div class="pdf-info-value">June 3, 2026</div></div>
+            <div class="pdf-info-block"><div class="pdf-info-label">Prepared by</div><div class="pdf-info-value">Kwame Osei</div></div>
+          </div>
+          <div class="pdf-table-header">
+            <span class="pdf-th">Description</span><span class="pdf-th" style="text-align:right">Qty</span><span class="pdf-th" style="text-align:right">Rate</span><span class="pdf-th" style="text-align:right">Total</span>
+          </div>
+          <div class="pdf-table-rows">
+            <div class="pdf-section-row"><span class="pdf-section-name">Foundation</span><span></span><span></span><span style="font-size:10px;font-weight:600;color:var(--ink);text-align:right">GHS 30,500</span></div>
+            <div class="pdf-tr"><span class="pdf-td">Excavation & Earthwork</span><span class="pdf-td-num">1 lot</span><span class="pdf-td-num">—</span><span class="pdf-td-price">GHS 8,400</span></div>
+            <div class="pdf-tr"><span class="pdf-td">Concrete Strip Foundation</span><span class="pdf-td-num">18.4 m³</span><span class="pdf-td-num">GHS 1,200</span><span class="pdf-td-price">GHS 22,100</span></div>
+            <div class="pdf-section-row"><span class="pdf-section-name">Blockwork</span><span></span><span></span><span style="font-size:10px;font-weight:600;color:var(--ink);text-align:right">GHS 45,900</span></div>
+            <div class="pdf-tr"><span class="pdf-td">Sandcrete Blocks (6")</span><span class="pdf-td-num">4,200</span><span class="pdf-td-num">GHS 6.50</span><span class="pdf-td-price">GHS 27,300</span></div>
+            <div class="pdf-tr"><span class="pdf-td">Reinforcement Steel</span><span class="pdf-td-num">2.8 t</span><span class="pdf-td-num">GHS 3,840</span><span class="pdf-td-price">GHS 10,752</span></div>
+            <div class="pdf-section-row"><span class="pdf-section-name">Roofing</span><span></span><span></span><span style="font-size:10px;font-weight:600;color:var(--ink);text-align:right">GHS 34,200</span></div>
+            <div class="pdf-tr"><span class="pdf-td">Roof Trusses + Sheets</span><span class="pdf-td-num">1 lot</span><span class="pdf-td-num">—</span><span class="pdf-td-price">GHS 34,200</span></div>
+          </div>
+          <div class="pdf-total-row">
+            <span class="pdf-total-label">Grand Total (excl. VAT)</span>
+            <span class="pdf-total-value">GHS 143,800</span>
+          </div>
+          <div class="pdf-footer">
+            <div>
+              <!-- QR code SVG -->
+              <div class="pdf-qr">
+                <svg width="40" height="40" viewBox="0 0 40 40">
+                  <rect x="2" y="2" width="16" height="16" rx="2" fill="none" stroke="#333" stroke-width="1.5"/>
+                  <rect x="5" y="5" width="10" height="10" fill="#333"/>
+                  <rect x="22" y="2" width="16" height="16" rx="2" fill="none" stroke="#333" stroke-width="1.5"/>
+                  <rect x="25" y="5" width="10" height="10" fill="#333"/>
+                  <rect x="2" y="22" width="16" height="16" rx="2" fill="none" stroke="#333" stroke-width="1.5"/>
+                  <rect x="5" y="25" width="10" height="10" fill="#333"/>
+                  <rect x="22" y="22" width="4" height="4" fill="#333"/>
+                  <rect x="28" y="22" width="4" height="4" fill="#333"/>
+                  <rect x="34" y="22" width="4" height="4" fill="#333"/>
+                  <rect x="22" y="28" width="4" height="4" fill="#333"/>
+                  <rect x="28" y="34" width="4" height="4" fill="#333"/>
+                  <rect x="34" y="28" width="10" height="4" fill="#333"/>
+                </svg>
+              </div>
+              <div class="pdf-disclaimer" style="margin-top:8px">For budgeting purposes only. Not a substitute for professional structural engineering. Prices based on live market data — valid 14 days.</div>
+            </div>
+            <div class="pdf-stamp">Approved ✓</div>
+          </div>
+        </div>
+        <button class="pdf-export-btn">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2v8M5 7l3 3 3-3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 12h12" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+          Download PDF · Share on WhatsApp
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════ COST OVERRUN ═════════════════════════════ -->
+<div class="overrun-section" id="overrun">
+  <div class="overrun-inner">
+    <div class="reveal">
+      <div class="eyebrow">Will I run out of money?</div>
+      <h2 class="sec-title">The question nobody answers.<br>We do.</h2>
+      <p class="sec-sub">67% of Ghanaian self-builds go over budget. We show you exactly when your money runs out — and how to phase your build so it doesn't.</p>
+    </div>
+    <div class="overrun-grid reveal">
+      <div class="overrun-stat">
+        <div class="overrun-big">67%</div>
+        <div class="overrun-label">of Ghana builds exceed budget</div>
+        <div class="overrun-sub">Our users average 4% overrun</div>
+        <div style="margin-top:28px;padding:16px;background:rgba(201,98,42,.08);border:1px solid rgba(201,98,42,.15);border-radius:10px">
+          <div style="font-size:12.5px;color:rgba(250,247,242,.55);line-height:1.65">"My contractor quoted GHS 85k. This app showed GHS 143k. I went back with the breakdown. He said he forgot the electrics, the ceiling, and the finishing."</div>
+          <div style="font-size:11.5px;color:var(--accent-2);margin-top:10px;font-weight:500">— Kwame Osei, Tema</div>
+        </div>
+      </div>
+      <div>
+        <div class="cashflow-demo">
+          <div class="cashflow-title">Phased Build Plan — 3-Bedroom, Tema</div>
+          <div class="cashflow-sub">Based on GHS 143,800 total estimate · 14 months</div>
+          <div class="cashflow-bars" id="cashflowBars">
+            <div class="cf-phase">
+              <span class="cf-label">Foundation</span>
+              <div class="cf-bar-wrap"><div class="cf-bar" style="width:0%;background:#c9622a" data-w="31"><span class="cf-bar-label">Month 1–2</span></div></div>
+              <span class="cf-amount">GHS 45k</span>
+            </div>
+            <div class="cf-phase">
+              <span class="cf-label">Blockwork</span>
+              <div class="cf-bar-wrap"><div class="cf-bar" style="width:0%;background:#e07a45" data-w="42"><span class="cf-bar-label">Month 3–5</span></div></div>
+              <span class="cf-amount">GHS 61k</span>
+            </div>
+            <div class="cf-phase">
+              <span class="cf-label">Roofing</span>
+              <div class="cf-bar-wrap"><div class="cf-bar" style="width:0%;background:#c9a227" data-w="24"><span class="cf-bar-label">Month 6–7</span></div></div>
+              <span class="cf-amount">GHS 34k</span>
+            </div>
+            <div class="cf-phase">
+              <span class="cf-label">Finishing</span>
+              <div class="cf-bar-wrap"><div class="cf-bar" style="width:0%;background:#4caf76" data-w="24"><span class="cf-bar-label">Month 8–14</span></div></div>
+              <span class="cf-amount">GHS 34k</span>
+            </div>
+          </div>
+          <div class="cashflow-total">
+            <span class="ct-label">Total project cost (2026 prices)</span>
+            <span class="ct-value">GHS 174,000</span>
+          </div>
+          <div class="predictor-note">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="#c9a227" stroke-width="1.3"/><path d="M8 7v4M8 5.5v.5" stroke="#c9a227" stroke-width="1.5" stroke-linecap="round"/></svg>
+            <span class="predictor-note-text"><strong>AI recommendation:</strong> Build to lintel level (GHS 45k), pause and save for 4 months, then continue. You'll finish debt-free in 18 months instead of abandoning after 8.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════ TESTIMONIALS ════════════════════════════ -->
+<div class="testi-section">
+  <div class="testi-inner">
+    <div class="reveal">
+      <div class="eyebrow">Real builders</div>
+      <h2 class="sec-title">People who stopped guessing<br>and started building</h2>
+    </div>
+    <div class="testi-grid reveal">
+      <div class="testi-card">
+        <div class="testi-stars"><span class="testi-star">★</span><span class="testi-star">★</span><span class="testi-star">★</span><span class="testi-star">★</span><span class="testi-star">★</span></div>
+        <div class="testi-text">"My mason quoted GHS 85k. This app showed GHS 143k. I went back with the breakdown. He said he forgot the electrics, the ceiling, and the finishing. Three big things."</div>
+        <div class="testi-author"><div class="testi-av" style="background:#2d6a4f">KO</div><div><div class="testi-name">Kwame Osei</div><div class="testi-role">Building in Tema, Greater Accra</div></div></div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars"><span class="testi-star">★</span><span class="testi-star">★</span><span class="testi-star">★</span><span class="testi-star">★</span><span class="testi-star">★</span></div>
+        <div class="testi-text">"I used the bank pack PDF to apply for a GCB loan. They said it was the most complete individual application they'd seen in months. Approved in 10 days."</div>
+        <div class="testi-author"><div class="testi-av" style="background:#7b2d8b">AA</div><div><div class="testi-name">Abena Asante</div><div class="testi-role">Self-build, Kumasi</div></div></div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars"><span class="testi-star">★</span><span class="testi-star">★</span><span class="testi-star">★</span><span class="testi-star">★</span><span class="testi-star">★</span></div>
+        <div class="testi-text">"I'm in London sending money home. The 3D walkthrough let me see every room. We caught a layout problem before the family broke ground — saved us GHS 30k to fix."</div>
+        <div class="testi-author"><div class="testi-av" style="background:#c9622a">EY</div><div><div class="testi-name">Emmanuel Yeboah</div><div class="testi-role">Diaspora build, East Legon</div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════ PRICING ═════════════════════════════════ -->
+<div class="pricing-section" id="pricing">
+  <div class="pricing-inner">
+    <div class="reveal" style="text-align:center">
+      <div class="eyebrow" style="justify-content:center;color:var(--accent-2)">Pricing</div>
+      <h2 style="font-family:'Fraunces',serif;font-size:clamp(32px,3.8vw,52px);font-weight:500;line-height:1.1;letter-spacing:-.028em;color:var(--cream);margin-bottom:14px">Pay when it saves you money</h2>
+      <p style="font-size:16px;font-weight:300;color:rgba(250,247,242,.4);max-width:400px;margin:0 auto">Start free. Upgrade when your project gets serious.</p>
+    </div>
+    <div class="pricing-grid reveal">
+      <div class="price-card">
+        <div class="price-tier">Free</div>
+        <div class="price-price">GHS 0</div>
+        <div class="price-unit">forever · no card</div>
+        <div class="price-div"></div>
+        <ul class="price-feats">
+          <li class="price-feat"><div class="pfc"><svg viewBox="0 0 8 8" fill="none"><path d="M1.5 4L3 5.5L6.5 2" stroke="#c9622a" stroke-width="1.2" stroke-linecap="round"/></svg></div>3 plan analyses</li>
+          <li class="price-feat"><div class="pfc"><svg viewBox="0 0 8 8" fill="none"><path d="M1.5 4L3 5.5L6.5 2" stroke="#c9622a" stroke-width="1.2" stroke-linecap="round"/></svg></div>Basic BOQ export</li>
+          <li class="price-feat"><div class="pfc"><svg viewBox="0 0 8 8" fill="none"><path d="M1.5 4L3 5.5L6.5 2" stroke="#c9622a" stroke-width="1.2" stroke-linecap="round"/></svg></div>AI plan explanation (EN + Twi)</li>
+          <li class="price-feat"><div class="pfc"><svg viewBox="0 0 8 8" fill="none"><path d="M1.5 4L3 5.5L6.5 2" stroke="#c9622a" stroke-width="1.2" stroke-linecap="round"/></svg></div>WhatsApp share</li>
+        </ul>
+        <a href="#" class="btn-p">Get started free</a>
+      </div>
+      <div class="price-card feat">
+        <div class="price-badge">Most popular</div>
+        <div class="price-tier">Pro</div>
+        <div class="price-price">GHS 29</div>
+        <div class="price-unit">per month · cancel anytime</div>
+        <div class="price-div"></div>
+        <ul class="price-feats">
+          <li class="price-feat"><div class="pfc"><svg viewBox="0 0 8 8" fill="none"><path d="M1.5 4L3 5.5L6.5 2" stroke="#c9622a" stroke-width="1.2" stroke-linecap="round"/></svg></div>Unlimited projects</li>
+          <li class="price-feat"><div class="pfc"><svg viewBox="0 0 8 8" fill="none"><path d="M1.5 4L3 5.5L6.5 2" stroke="#c9622a" stroke-width="1.2" stroke-linecap="round"/></svg></div>Live Ghana pricing engine</li>
+          <li class="price-feat"><div class="pfc"><svg viewBox="0 0 8 8" fill="none"><path d="M1.5 4L3 5.5L6.5 2" stroke="#c9622a" stroke-width="1.2" stroke-linecap="round"/></svg></div>3D walkthrough video (MP4)</li>
+          <li class="price-feat"><div class="pfc"><svg viewBox="0 0 8 8" fill="none"><path d="M1.5 4L3 5.5L6.5 2" stroke="#c9622a" stroke-width="1.2" stroke-linecap="round"/></svg></div>Bank loan PDF pack (GCB + ADB)</li>
+          <li class="price-feat"><div class="pfc"><svg viewBox="0 0 8 8" fill="none"><path d="M1.5 4L3 5.5L6.5 2" stroke="#c9622a" stroke-width="1.2" stroke-linecap="round"/></svg></div>Custom estimator + branded PDF</li>
+          <li class="price-feat"><div class="pfc"><svg viewBox="0 0 8 8" fill="none"><path d="M1.5 4L3 5.5L6.5 2" stroke="#c9622a" stroke-width="1.2" stroke-linecap="round"/></svg></div>Build progress tracker</li>
+          <li class="price-feat"><div class="pfc"><svg viewBox="0 0 8 8" fill="none"><path d="M1.5 4L3 5.5L6.5 2" stroke="#c9622a" stroke-width="1.2" stroke-linecap="round"/></svg></div>DXF / CAD export</li>
+          <li class="price-feat"><div class="pfc"><svg viewBox="0 0 8 8" fill="none"><path d="M1.5 4L3 5.5L6.5 2" stroke="#c9622a" stroke-width="1.2" stroke-linecap="round"/></svg></div>Land fit check</li>
+          <li class="price-feat"><div class="pfc"><svg viewBox="0 0 8 8" fill="none"><path d="M1.5 4L3 5.5L6.5 2" stroke="#c9622a" stroke-width="1.2" stroke-linecap="round"/></svg></div>Rainy season adjuster</li>
+        </ul>
+        <a href="#" class="btn-pf">Start Pro — GHS 29/month</a>
+      </div>
+      <div class="price-card">
+        <div class="price-tier">Team</div>
+        <div class="price-price">GHS 149</div>
+        <div class="price-unit">per month · 5 users</div>
+        <div class="price-div"></div>
+        <ul class="price-feats">
+          <li class="price-feat"><div class="pfc"><svg viewBox="0 0 8 8" fill="none"><path d="M1.5 4L3 5.5L6.5 2" stroke="#c9622a" stroke-width="1.2" stroke-linecap="round"/></svg></div>Everything in Pro</li>
+          <li class="price-feat"><div class="pfc"><svg viewBox="0 0 8 8" fill="none"><path d="M1.5 4L3 5.5L6.5 2" stroke="#c9622a" stroke-width="1.2" stroke-linecap="round"/></svg></div>Team roles (estimator, admin, viewer)</li>
+          <li class="price-feat"><div class="pfc"><svg viewBox="0 0 8 8" fill="none"><path d="M1.5 4L3 5.5L6.5 2" stroke="#c9622a" stroke-width="1.2" stroke-linecap="round"/></svg></div>Artisan marketplace + booking</li>
+          <li class="price-feat"><div class="pfc"><svg viewBox="0 0 8 8" fill="none"><path d="M1.5 4L3 5.5L6.5 2" stroke="#c9622a" stroke-width="1.2" stroke-linecap="round"/></svg></div>Supplier directory + discounts</li>
+          <li class="price-feat"><div class="pfc"><svg viewBox="0 0 8 8" fill="none"><path d="M1.5 4L3 5.5L6.5 2" stroke="#c9622a" stroke-width="1.2" stroke-linecap="round"/></svg></div>White-label branded PDFs</li>
+          <li class="price-feat"><div class="pfc"><svg viewBox="0 0 8 8" fill="none"><path d="M1.5 4L3 5.5L6.5 2" stroke="#c9622a" stroke-width="1.2" stroke-linecap="round"/></svg></div>Land litigation check</li>
+          <li class="price-feat"><div class="pfc"><svg viewBox="0 0 8 8" fill="none"><path d="M1.5 4L3 5.5L6.5 2" stroke="#c9622a" stroke-width="1.2" stroke-linecap="round"/></svg></div>Diaspora funding mode</li>
+        </ul>
+        <a href="#" class="btn-p">Contact us</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════ FINAL CTA ════════════════════════════════ -->
+<div class="final-cta">
+  <canvas id="ctaCanvas"></canvas>
+  <div class="final-cta-inner reveal">
+    <div class="eyebrow" style="justify-content:center;color:var(--accent-2)">Get started today</div>
+    <h2 class="cta-title">Your house deserves<br>a <em>real number</em></h2>
+    <p class="cta-sub">Free to try. No card needed. 8 seconds from photo to estimate.</p>
+    <div class="cta-actions">
+      <a href="#" class="btn-hero">Try it free — no card needed</a>
+      <a href="#estimator" class="btn-hero-ghost">Build your own estimate</a>
+    </div>
+    <div class="cta-note">Trusted by 12,000+ builders · GHS 2.1B estimated · Built in Accra</div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <a href="#" class="footer-logo">Ghana<span>AI</span> Estimator</a>
+  <nav class="footer-links">
+    <a href="#">Privacy</a><a href="#">Terms</a><a href="#">Blog</a><a href="#">WhatsApp</a><a href="#">Artisans</a>
+  </nav>
+  <div class="footer-copy">© 2026 Ghana AI Estimator. Built in Accra.</div>
+</footer>
+
+<!-- ═══════════════════════════ JAVASCRIPT ═══════════════════════════════ -->
+<script>
+// ─── CURSOR ───────────────────────────────────────────────────────────────
+const $cur=document.getElementById('cur'),
+      $ring=document.getElementById('cur-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;$cur.style.left=mx+'px';$cur.style.top=my+'px'});
+(function loop(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;$ring.style.left=rx+'px';$ring.style.top=ry+'px';requestAnimationFrame(loop)})();
+document.querySelectorAll('a,button').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{$cur.style.width='18px';$cur.style.height='18px';$ring.style.width='50px';$ring.style.height='50px'});
+  el.addEventListener('mouseleave',()=>{$cur.style.width='10px';$cur.style.height='10px';$ring.style.width='36px';$ring.style.height='36px'});
+});
+
+// ─── SCROLL REVEAL ────────────────────────────────────────────────────────
+const revObs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in')})},{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>revObs.observe(el));
+
+// ─── COUNTER ANIMATION ────────────────────────────────────────────────────
+function animCounter(el){
+  const target=parseFloat(el.dataset.target),suffix=el.dataset.suffix||'';
+  let start=null;
+  (function step(ts){
+    if(!start)start=ts;
+    const p=Math.min((ts-start)/2000,1),ease=1-Math.pow(1-p,4);
+    const val=target*ease;
+    el.textContent=(val>=10?Math.round(val):val.toFixed(1))+suffix;
+    if(p<1)requestAnimationFrame(step);
+  })(0);
+}
+const ctrObs=new IntersectionObserver(e=>{e.forEach(en=>{if(en.isIntersecting){en.target.querySelectorAll('.counter').forEach(animCounter);ctrObs.unobserve(en.target)}})},{threshold:.3});
+document.querySelectorAll('.problem-grid').forEach(el=>ctrObs.observe(el));
+
+// ─── CASHFLOW BARS ANIMATE ────────────────────────────────────────────────
+const cfObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      document.querySelectorAll('.cf-bar').forEach((bar,i)=>{
+        setTimeout(()=>{bar.style.width=bar.dataset.w+'%'},i*250);
+      });
+      cfObs.unobserve(e.target);
+    }
+  });
+},{threshold:.3});
+const cfEl=document.getElementById('cashflowBars');
+if(cfEl)cfObs.observe(cfEl);
+
+// ─── BOQ ROW ANIMATE IN ───────────────────────────────────────────────────
+setTimeout(()=>{const r=document.getElementById('animRow');if(r){r.style.opacity='1';r.style.animation='rowIn .4s ease forwards'}},3000);
+
+// ─── AI READING STATUS ────────────────────────────────────────────────────
+const statuses=['Analyzing dimensions...','Extracting room labels...','Detecting wall thickness...','Calculating floor areas...','Fetching live prices...','Generating BOQ...','Complete — 8.4s'];
+let si=0;
+setInterval(()=>{
+  const el=document.getElementById('aiReadingStatus');
+  if(el){el.textContent=statuses[si];si=(si+1)%statuses.length}
+},1400);
+
+// ─── PERSONA TOGGLE ────────────────────────────────────────────────────────
+function setPersona(p){
+  document.querySelectorAll('.persona-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.persona-content').forEach(c=>c.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('persona-'+p).classList.add('active');
+}
+
+// ─── PLAN MODE ────────────────────────────────────────────────────────────
+let planMode='2d';
+function setPlanMode(m){
+  planMode=m;
+  document.querySelectorAll('.plan-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('btn'+m).classList.add('active');
+  drawBigPlan();
+}
+
+// ─── TAB SWITCH ───────────────────────────────────────────────────────────
+function switchTab(el,i){
+  document.querySelectorAll('.demo-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ─── THREE.JS UTILS ───────────────────────────────────────────────────────
+function mkRenderer(canvas,w,h,bg='#0a0a08'){
+  const r=new THREE.WebGLRenderer({canvas,antialias:true});
+  r.setSize(w,h);r.setPixelRatio(Math.min(devicePixelRatio,2));
+  r.setClearColor(bg,1);r.shadowMap.enabled=true;
+  r.toneMapping=THREE.ACESFilmicToneMapping;r.toneMappingExposure=1.2;
+  return r;
+}
+function mkCam(w,h,fov=48){const c=new THREE.PerspectiveCamera(fov,w/h,.1,200);return c}
+function mkMat(c,r=.75,m=0,e=null,ei=0){
+  const o={color:c,roughness:r,metalness:m};
+  if(e!==null){o.emissive=e;o.emissiveIntensity=ei}
+  return new THREE.MeshStandardMaterial(o);
+}
+function mkBox(scene,w,h,d,mat,x=0,y=0,z=0){
+  const mesh=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);
+  mesh.position.set(x,y+h/2,z);mesh.castShadow=true;mesh.receiveShadow=true;
+  scene.add(mesh);return mesh;
+}
+function mkLights(scene){
+  scene.add(new THREE.AmbientLight(0xffffff,.28));
+  const d=new THREE.DirectionalLight(0xfff5e0,2.2);
+  d.position.set(7,12,7);d.castShadow=true;d.shadow.mapSize.set(2048,2048);
+  d.shadow.camera.left=-15;d.shadow.camera.right=15;
+  d.shadow.camera.top=15;d.shadow.camera.bottom=-15;
+  scene.add(d);
+  return d;
+}
+function mkGround(scene,c=0x0d0d0b){
+  const m=new THREE.Mesh(new THREE.PlaneGeometry(40,40),mkMat(c,1));
+  m.rotation.x=-Math.PI/2;m.receiveShadow=true;scene.add(m);
+}
+function mkTree(scene,x,z,h=2,r=.8){
+  mkBox(scene,.1,h,.1,mkMat(0x4a2e10,.9),x,0,z);
+  const f=new THREE.Mesh(new THREE.SphereGeometry(r,7,7),mkMat(0x2a5a30,.9));
+  f.position.set(x,h+r*.4,z);f.castShadow=true;scene.add(f);
+}
+function mkCone(scene,r,h,c,x,y,z){
+  const m=new THREE.Mesh(new THREE.ConeGeometry(r,h,4),mkMat(c,.8));
+  m.position.set(x,y,z);m.rotation.y=Math.PI/4;m.castShadow=true;scene.add(m);return m;
+}
+function buildHouse(scene,scale=1){
+  const s=scale;
+  const wm=mkMat(0xd4c5a9,.82),rm=mkMat(0x8b3a2a,.78),wg=mkMat(0xfff5b0,.05,.1,0xfff5b0,.55);
+  mkBox(scene,8*s,3*s,7*s,wm,0,0,0);
+  mkBox(scene,8*s,.15*s,7*s,mkMat(0x333,.8),0,3*s,0);
+  mkCone(scene,5.8*s,2.2*s,0x8b3a2a,0,4.2*s,0);
+  mkBox(scene,3.2*s,2.4*s,5*s,mkMat(0xccc0ae,.82),5.6*s,0,.5*s);
+  mkCone(scene,2.8*s,1.5*s,0x7a3530,5.6*s,3.15*s,.5*s);
+  mkBox(scene,.14*s,2.8*s,3.5*s,mkMat(0xc8b99a,.8),0,.2*s,1.75*s);
+  mkBox(scene,3.5*s,2.8*s,.14*s,mkMat(0xc8b99a,.8),-2.25*s,.2*s,0);
+  [-2*s,0,2*s].forEach(x=>mkBox(scene,1*s,.75*s,.05*s,wg,x,1.4*s,3.55*s));
+  [-2*s,2*s].forEach(x=>mkBox(scene,.05*s,.8*s,1*s,wg,4.05*s,1.2*s,x));
+  mkBox(scene,1*s,1.8*s,.05*s,mkMat(0x5c3a1e,.6),0,.1*s,3.55*s);
+  mkBox(scene,1.8*s,.15*s,.5*s,mkMat(0x999,.9),0,.1*s,4.05*s);
+  mkTree(scene,-5.5*s,2*s,2.5*s,1*s);mkTree(scene,-5*s,-1*s,2*s,.8*s);
+  mkTree(scene,8*s,-2*s,2*s,.8*s);mkTree(scene,2*s,-4*s,2.8*s,1.1*s);
+  const pt=new THREE.PointLight(0xc9622a,3,12*s);pt.position.set(-3*s,3*s,2*s);scene.add(pt);
+  return pt;
+}
+
+// ═══ HERO 2D PLAN CANVAS (animated architectural drawing) ═════════════════
+(function(){
+  const canvas=document.getElementById('heroPlanCanvas');
+  const wrap=document.getElementById('planSide');
+  let W=wrap.clientWidth,H=wrap.clientHeight||520;
+  canvas.width=W;canvas.height=H;
+  const ctx=canvas.getContext('2d');
+
+  // Scale factor to fit into panel
+  const SCALE=Math.min(W,H)/320;
+  const OX=(W-280*SCALE)/2,OY=(H-220*SCALE)/2+10;
+
+  // Define the 3-bed bungalow rooms in local coords (in "drawing units")
+  const plan={
+    extWalls:[
+      [0,0,180,0],[180,0,180,140],[180,140,0,140],[0,140,0,0] // main rectangle
+    ],
+    intWalls:[
+      [90,0,90,90],    // vertical center div
+      [0,60,90,60],    // left horizontal
+      [90,50,180,50],  // right horizontal
+      [90,90,180,90],  // right lower horizontal
+    ],
+    rooms:[
+      {x:2,y:2,w:86,h:56,label:'MASTER BEDROOM',sub:'4.2 × 5.4m',color:'rgba(201,98,42,.07)'},
+      {x:2,y:60,w:86,h:78,label:'LIVING / DINING',sub:'4.2 × 7.2m',color:'rgba(76,175,118,.07)'},
+      {x:92,y:2,w:86,h:46,label:'BEDROOM 2',sub:'4.1 × 4.4m',color:'rgba(74,111,165,.07)'},
+      {x:92,y:50,w:86,h:38,label:'BEDROOM 3',sub:'4.1 × 3.6m',color:'rgba(201,162,39,.07)'},
+      {x:92,y:90,w:50,h:48,label:'KITCHEN',sub:'2.4 × 4.6m',color:'rgba(201,98,42,.05)'},
+      {x:144,y:90,w:34,h:48,label:'BATH',sub:'1.6 × 4.6m',color:'rgba(74,111,165,.05)'},
+    ],
+    doors:[
+      {x:40,y:140,w:18,swing:'in',side:'bottom'},
+      {x:100,y:60,w:16,swing:'in',side:'bottom'},
+      {x:100,y:90,w:16,swing:'in',side:'bottom'},
+    ],
+    windows:[
+      {x:20,y:0,w:30,side:'top'},{x:60,y:0,w:24,side:'top'},
+      {x:100,y:0,w:28,side:'top'},{x:150,y:0,w:20,side:'top'},
+      {x:0,y:80,w:24,side:'left'},{x:180,y:15,w:24,side:'right'},{x:180,y:65,w:20,side:'right'},
+    ]
+  };
+
+  let progress=0;
+  const DRAW_DURATION=180; // frames
+
+  function toScreen(x,y){return[OX+x*SCALE,OY+y*SCALE]}
+
+  function drawWallSegment(x1,y1,x2,y2,thick,color,prog){
+    if(prog<=0)return;
+    const[sx1,sy1]=toScreen(x1,y1);const[sx2,sy2]=toScreen(x2,y2);
+    const len=Math.sqrt((sx2-sx1)**2+(sy2-sy1)**2);
+    const drawLen=len*prog;
+    const dx=(sx2-sx1)/len,dy=(sy2-sy1)/len;
+    ctx.save();
+    ctx.strokeStyle=color;ctx.lineWidth=thick*SCALE;ctx.lineCap='square';
+    ctx.beginPath();ctx.moveTo(sx1,sy1);ctx.lineTo(sx1+dx*drawLen,sy1+dy*drawLen);ctx.stroke();
+    ctx.restore();
+  }
+
+  function drawHatch(x,y,w,h,alpha){
+    ctx.save();ctx.globalAlpha=alpha;
+    ctx.fillStyle='#0d0d0b';
+    const[sx,sy]=toScreen(x,y);const sw=w*SCALE,sh=h*SCALE;
+    ctx.fillRect(sx,sy,sw,sh);
+    ctx.restore();
+  }
+
+  function drawRoom(room,alpha){
+    const[sx,sy]=toScreen(room.x,room.y);
+    const sw=room.w*SCALE,sh=room.h*SCALE;
+    ctx.save();ctx.globalAlpha=alpha;
+    ctx.fillStyle=room.color;ctx.fillRect(sx,sy,sw,sh);
+    if(alpha>0.5){
+      ctx.fillStyle='rgba(13,13,11,.55)';
+      ctx.font=`bold ${Math.max(7,7*SCALE)}px DM Sans,sans-serif`;
+      ctx.textAlign='center';
+      ctx.fillText(room.label,sx+sw/2,sy+sh/2-4*SCALE);
+      ctx.fillStyle='rgba(13,13,11,.35)';
+      ctx.font=`${Math.max(6,6*SCALE)}px DM Sans,sans-serif`;
+      ctx.fillText(room.sub,sx+sw/2,sy+sh/2+8*SCALE);
+    }
+    ctx.restore();
+  }
+
+  function drawWindow(win,alpha){
+    ctx.save();ctx.globalAlpha=alpha;
+    const[sx,sy]=toScreen(win.x,win.y);
+    const ws=win.w*SCALE,thick=5*SCALE;
+    ctx.fillStyle='white';
+    if(win.side==='top'){
+      ctx.fillRect(sx,sy-thick/2,ws,thick);
+      ctx.strokeStyle='#aaa';ctx.lineWidth=.8;
+      ctx.beginPath();ctx.moveTo(sx,sy-thick/2);ctx.lineTo(sx+ws,sy-thick/2);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(sx,sy+thick/2);ctx.lineTo(sx+ws,sy+thick/2);ctx.stroke();
+      // center glass line
+      ctx.strokeStyle='#88bbee';ctx.lineWidth=2;
+      ctx.beginPath();ctx.moveTo(sx,sy);ctx.lineTo(sx+ws,sy);ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  function drawDoor(door,alpha){
+    ctx.save();ctx.globalAlpha=alpha;
+    const[sx,sy]=toScreen(door.x,door.y);
+    const ds=door.w*SCALE;
+    ctx.strokeStyle='#555';ctx.lineWidth=1.5;
+    // Door leaf
+    ctx.beginPath();ctx.moveTo(sx,sy);ctx.lineTo(sx+ds,sy);ctx.stroke();
+    // Arc (swing)
+    ctx.setLineDash([3,2]);ctx.strokeStyle='#aaa';ctx.lineWidth=1;
+    ctx.beginPath();ctx.arc(sx,sy,ds,0,Math.PI/2);ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.restore();
+  }
+
+  function drawDimLine(x1,y1,x2,y2,label,offset,alpha){
+    ctx.save();ctx.globalAlpha=alpha;
+    const[sx1,sy1]=toScreen(x1,y1);const[sx2,sy2]=toScreen(x2,y2);
+    const isH=Math.abs(y2-y1)<1;
+    const ox=isH?0:offset*SCALE,oy=isH?offset*SCALE:0;
+    ctx.strokeStyle='rgba(201,98,42,.7)';ctx.lineWidth=.8;ctx.setLineDash([3,2]);
+    ctx.beginPath();ctx.moveTo(sx1+ox,sy1+oy);ctx.lineTo(sx2+ox,sy2+oy);ctx.stroke();
+    ctx.setLineDash([]);
+    // ticks
+    [[sx1+ox,sy1+oy],[sx2+ox,sy2+oy]].forEach(([px,py])=>{
+      ctx.beginPath();
+      if(isH){ctx.moveTo(px,py-4);ctx.lineTo(px,py+4)}
+      else{ctx.moveTo(px-4,py);ctx.lineTo(px+4,py)}
+      ctx.stroke();
+    });
+    ctx.fillStyle='rgba(201,98,42,.8)';
+    ctx.font=`bold ${Math.max(6,5.5*SCALE)}px DM Sans,sans-serif`;
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    if(isH)ctx.fillText(label,(sx1+sx2)/2+ox,(sy1+oy)-9);
+    else ctx.fillText(label,(sx1+ox)+12,(sy1+sy2)/2+oy);
+    ctx.restore();
+  }
+
+  function drawNorthArrow(alpha){
+    ctx.save();ctx.globalAlpha=alpha;
+    const[ax,ay]=toScreen(165,130);
+    ctx.strokeStyle='#333';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(ax,ay+14);ctx.lineTo(ax,ay-14);ctx.stroke();
+    // Arrowhead
+    ctx.fillStyle='#333';ctx.beginPath();ctx.moveTo(ax-5,ay-8);ctx.lineTo(ax,ay-16);ctx.lineTo(ax+5,ay-8);ctx.closePath();ctx.fill();
+    ctx.fillStyle='#333';ctx.font=`bold ${7*SCALE}px DM Sans,sans-serif`;ctx.textAlign='center';
+    ctx.fillText('N',ax,ay-20);
+    ctx.restore();
+  }
+
+  function drawTitleBlock(alpha){
+    ctx.save();ctx.globalAlpha=alpha;
+    const[tx,ty]=toScreen(0,145);
+    const tw=180*SCALE;
+    ctx.strokeStyle='#333';ctx.lineWidth=1;
+    ctx.strokeRect(tx,ty+5,tw,24*SCALE);
+    ctx.beginPath();ctx.moveTo(tx+tw*.55,ty+5);ctx.lineTo(tx+tw*.55,ty+29*SCALE);ctx.stroke();
+    ctx.fillStyle='#0d0d0b';
+    ctx.font=`bold ${6*SCALE}px DM Sans,sans-serif`;ctx.textAlign='left';
+    ctx.fillText('PROJECT:',tx+4,ty+13);ctx.fillText('3-BEDROOM BUNGALOW · TEMA, GHANA',tx+4,ty+21);
+    ctx.fillText('SCALE: 1:100',tx+tw*.57,ty+13);ctx.fillText('DATE: JUNE 2026',tx+tw*.57,ty+21);
+    ctx.restore();
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    // White background
+    ctx.fillStyle='#f9f7f2';ctx.fillRect(0,0,W,H);
+    // Grid lines (faint)
+    ctx.strokeStyle='rgba(0,0,0,.04)';ctx.lineWidth=.5;
+    for(let gx=0;gx<W;gx+=20*SCALE){ctx.beginPath();ctx.moveTo(gx,0);ctx.lineTo(gx,H);ctx.stroke()}
+    for(let gy=0;gy<H;gy+=20*SCALE){ctx.beginPath();ctx.moveTo(0,gy);ctx.lineTo(W,gy);ctx.stroke()}
+
+    const p=Math.min(progress/DRAW_DURATION,1);
+
+    // 1) Rooms fill (early)
+    const rAlpha=Math.max(0,(p-.1)/.3);
+    plan.rooms.forEach(r=>drawRoom(r,rAlpha));
+
+    // 2) External walls (wall hatch fill first)
+    const wallProg=Math.min(p/.4,1);
+    // Wall fill (thick black for external)
+    plan.extWalls.forEach(([x1,y1,x2,y2])=>drawWallSegment(x1,y1,x2,y2,6,0x0d0d0b,wallProg));
+
+    // 3) Internal walls
+    const intProg=Math.max(0,(p-.3)/.3);
+    plan.intWalls.forEach(([x1,y1,x2,y2])=>drawWallSegment(x1,y1,x2,y2,3,'#555',intProg));
+
+    // 4) Windows
+    const winAlpha=Math.max(0,(p-.5)/.2);
+    plan.windows.forEach(w=>drawWindow(w,winAlpha));
+
+    // 5) Doors
+    const doorAlpha=Math.max(0,(p-.6)/.2);
+    plan.doors.forEach(d=>drawDoor(d,doorAlpha));
+
+    // 6) Dimension lines
+    const dimAlpha=Math.max(0,(p-.7)/.2);
+    drawDimLine(0,0,180,0,'18.0m',-15,dimAlpha);
+    drawDimLine(0,0,0,140,'14.0m',-15,dimAlpha);
+    drawDimLine(0,0,90,0,'9.0m',-24,dimAlpha);
+
+    // 7) North arrow
+    drawNorthArrow(Math.max(0,(p-.8)/.15));
+
+    // 8) Title block
+    drawTitleBlock(Math.max(0,(p-.85)/.15));
+
+    // 9) Scale bar
+    const sbAlpha=Math.max(0,(p-.9)/.1);
+    if(sbAlpha>0){
+      ctx.save();ctx.globalAlpha=sbAlpha;
+      const[sbx,sby]=toScreen(5,152);
+      const barW=50*SCALE;
+      ctx.fillStyle='#333';ctx.fillRect(sbx,sby,barW/2,4);
+      ctx.fillStyle='#fff';ctx.strokeStyle='#333';ctx.lineWidth=.8;
+      ctx.strokeRect(sbx,sby,barW/2,4);ctx.strokeRect(sbx+barW/2,sby,barW/2,4);
+      ctx.fillStyle='#555';ctx.font=`${5*SCALE}px DM Sans,sans-serif`;ctx.textAlign='center';
+      ctx.fillText('0',sbx,sby+10);ctx.fillText('5m',sbx+barW/2,sby+10);ctx.fillText('10m',sbx+barW,sby+10);
+      ctx.fillText('SCALE 1:100',sbx+barW/2,sby-3);
+      ctx.restore();
+    }
+
+    progress++;
+    if(progress<DRAW_DURATION+60)requestAnimationFrame(draw);
+    else{
+      // Loop
+      setTimeout(()=>{progress=0;requestAnimationFrame(draw)},4000);
+    }
+  }
+  draw();
+  window.addEventListener('resize',()=>{W=wrap.clientWidth;H=wrap.clientHeight||520;canvas.width=W;canvas.height=H});
+})();
+
+// ═══ HERO 3D SCENE ════════════════════════════════════════════════════════
+(function(){
+  const canvas=document.getElementById('hero3dCanvas');
+  const wrap=document.getElementById('hero3dSide');
+  const W=wrap.clientWidth,H=wrap.clientHeight||520;
+  const renderer=mkRenderer(canvas,W,H,'#0a0a08');
+  const scene=new THREE.Scene();scene.background=new THREE.Color(0x0a0a08);
+  scene.fog=new THREE.Fog(0x0a0a08,20,50);
+  const camera=mkCam(W,H,46);camera.position.set(9,6,11);camera.lookAt(0,1.5,0);
+  mkLights(scene);mkGround(scene);
+  scene.add(new THREE.GridHelper(26,26,0x1a1a18,0x141412));
+  const ptLight=buildHouse(scene,1);
+
+  // Animate staggered parts build
+  let t=0;
+  function animate(){requestAnimationFrame(animate);t+=.005;
+    camera.position.x=Math.sin(t*.3)*11;camera.position.z=Math.cos(t*.3)*11;
+    camera.position.y=5.5+Math.sin(t*.2)*.6;camera.lookAt(0,1.6,0);
+    if(ptLight)ptLight.intensity=2.5+Math.sin(t*2)*.8;
+    renderer.render(scene,camera);
+  }
+  animate();
+})();
+
+// ═══ BIG PLAN CANVAS ══════════════════════════════════════════════════════
+let bigPlanCtx,bigPlanW,bigPlanH,bigPlanProgress=0,bigPlanAnimating=true;
+(function(){
+  const canvas=document.getElementById('bigPlanCanvas');
+  const W=canvas.parentElement.clientWidth;
+  canvas.width=W;canvas.height=520;
+  bigPlanW=W;bigPlanH=520;
+  bigPlanCtx=canvas.getContext('2d');
+  drawBigPlan();
+})();
+
+function drawBigPlan(){
+  const ctx=bigPlanCtx;if(!ctx)return;
+  const W=bigPlanW,H=bigPlanH;
+  ctx.clearRect(0,0,W,H);
+
+  if(planMode==='2d'){
+    drawArchitecturalPlan(ctx,W,H,1);
+  } else if(planMode==='3d'){
+    // Draw a 3D axonometric view
+    drawAxonometric(ctx,W,H);
+  } else {
+    drawSitePlan(ctx,W,H);
+  }
+}
+
+function drawArchitecturalPlan(ctx,W,H,anim){
+  // White background with subtle paper texture
+  ctx.fillStyle='#fdfcf9';ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle='rgba(0,0,0,.03)';ctx.lineWidth=.5;
+  for(let x=0;x<W;x+=24){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke()}
+  for(let y=0;y<H;y+=24){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke()}
+
+  // Scale everything to fit nicely
+  const SCALE=Math.min(W/240,H/200)*.85;
+  const OX=(W-220*SCALE)/2+10,OY=(H-190*SCALE)/2;
+
+  function sc(x,y){return[OX+x*SCALE,OY+y*SCALE]}
+
+  // ── ROOMS (fills) ──
+  const rooms=[
+    {x:1,y:1,w:98,h:64,label:'MASTER BEDROOM',sub:'4.8 × 6.2m',c:'rgba(201,98,42,.06)'},
+    {x:1,y:67,w:60,h:72,label:'LIVING ROOM',sub:'5.0 × 7.2m',c:'rgba(76,175,118,.06)'},
+    {x:63,y:67,w:37,h:38,label:'DINING',sub:'3.7 × 3.8m',c:'rgba(74,111,165,.06)'},
+    {x:63,y:107,w:37,h:32,label:'KITCHEN',sub:'3.7 × 3.2m',c:'rgba(201,162,39,.06)'},
+    {x:1,y:141,w:60,h:18,label:'VERANDA',sub:'—',c:'rgba(13,13,11,.03)'},
+    {x:101,y:1,w:55,h:56,label:'BEDROOM 2',sub:'5.4 × 5.6m',c:'rgba(74,111,165,.07)'},
+    {x:158,y:1,w:60,h:56,label:'BEDROOM 3',sub:'5.8 × 5.6m',c:'rgba(201,162,39,.07)'},
+    {x:101,y:59,w:32,h:42,label:'ENSUITE',sub:'3.2 × 4.2m',c:'rgba(201,98,42,.04)'},
+    {x:135,y:59,w:26,h:42,label:'WC',sub:'2.6 × 4.2m',c:'rgba(74,111,165,.04)'},
+    {x:163,y:59,w:55,h:42,label:'SERVICE',sub:'—',c:'rgba(13,13,11,.03)'},
+    {x:101,y:103,w:60,h:36,label:'STORE',sub:'—',c:'rgba(13,13,11,.02)'},
+    {x:163,y:103,w:55,h:36,label:'GARAGE',sub:'5.5 × 3.6m',c:'rgba(13,13,11,.04)'},
+  ];
+
+  rooms.forEach(r=>{
+    const[sx,sy]=sc(r.x,r.y);const sw=r.w*SCALE,sh=r.h*SCALE;
+    ctx.fillStyle=r.c;ctx.fillRect(sx,sy,sw,sh);
+    if(r.w>25&&r.h>18){
+      ctx.fillStyle='rgba(13,13,11,.5)';
+      ctx.font=`500 ${Math.max(6.5,5.5*SCALE)}px DM Sans,sans-serif`;
+      ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(r.label,sx+sw/2,sy+sh/2-(r.h>24?5*SCALE:0));
+      if(r.h>22&&r.w>20){
+        ctx.fillStyle='rgba(13,13,11,.3)';
+        ctx.font=`300 ${Math.max(5.5,4.5*SCALE)}px DM Sans,sans-serif`;
+        ctx.fillText(r.sub,sx+sw/2,sy+sh/2+7*SCALE);
+      }
+    }
+  });
+
+  // ── EXTERNAL WALLS (thick, hatched) ──
+  ctx.strokeStyle='#0d0d0b';ctx.lineWidth=6*SCALE;ctx.lineCap='square';ctx.lineJoin='miter';
+  // Main outline
+  ctx.strokeRect(...sc(1,1),218*SCALE,158*SCALE);
+  // Internal subdivision walls
+  ctx.lineWidth=3.5*SCALE;ctx.strokeStyle='#2a2a28';
+  // Vertical spines
+  [[100,1,100,159],[158,1,158,101],[162,101,162,139]].forEach(([x1,y1,x2,y2])=>{
+    ctx.beginPath();ctx.moveTo(...sc(x1,y1));ctx.lineTo(...sc(x2,y2));ctx.stroke();
+  });
+  // Horizontal partitions
+  [[1,65,100,65],[1,139,100,139],[62,65,100,65],[62,65,62,139],
+   [100,57,162,57],[100,101,162,101],[162,57,219,57],[162,101,219,101]].forEach(([x1,y1,x2,y2])=>{
+    ctx.beginPath();ctx.moveTo(...sc(x1,y1));ctx.lineTo(...sc(x2,y2));ctx.stroke();
+  });
+
+  // ── WINDOWS ──
+  ctx.lineWidth=1.2;
+  const wins=[
+    {x:15,y:1,w:26,s:'top'},{x:55,y:1,w:30,s:'top'},{x:110,y:1,w:28,s:'top'},
+    {x:168,y:1,w:34,s:'top'},{x:1,y:90,w:28,s:'left'},{x:219,y:25,w:26,s:'right'},
+    {x:219,y:75,w:20,s:'right'},{x:80,y:159,w:30,s:'bottom'}
+  ];
+  wins.forEach(w=>{
+    const[sx,sy]=sc(w.x,w.y);const ws=w.w*SCALE,th=5*SCALE;
+    ctx.fillStyle='#e8f4ff';ctx.strokeStyle='#aac8e0';
+    if(w.s==='top'){
+      ctx.fillRect(sx,sy-th/2,ws,th);ctx.strokeRect(sx,sy-th/2,ws,th);
+      ctx.strokeStyle='#88bbdd';ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.moveTo(sx+ws/2,sy-th/2);ctx.lineTo(sx+ws/2,sy+th/2);ctx.stroke();
+    } else if(w.s==='right'){
+      ctx.fillRect(sx-th/2,sy,th,ws);ctx.strokeRect(sx-th/2,sy,th,ws);
+      ctx.strokeStyle='#88bbdd';ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.moveTo(sx-th/2,sy+ws/2);ctx.lineTo(sx+th/2,sy+ws/2);ctx.stroke();
+    } else if(w.s==='left'){
+      ctx.fillRect(sx-th/2,sy,th,ws);ctx.strokeRect(sx-th/2,sy,th,ws);
+      ctx.strokeStyle='#88bbdd';ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.moveTo(sx-th/2,sy+ws/2);ctx.lineTo(sx+th/2,sy+ws/2);ctx.stroke();
+    } else if(w.s==='bottom'){
+      ctx.fillRect(sx,sy-th/2,ws,th);ctx.strokeRect(sx,sy-th/2,ws,th);
+    }
+  });
+
+  // ── DOORS ──
+  const doors=[
+    {x:40,y:159,w:18,hinge:'left',swing:'down'},
+    {x:1,y:90,w:18,hinge:'top',swing:'right'},
+    {x:100,y:90,w:16,hinge:'top',swing:'right'},
+    {x:110,y:57,w:16,hinge:'left',swing:'up'},
+    {x:162,y:80,w:16,hinge:'top',swing:'right'},
+  ];
+  doors.forEach(d=>{
+    const[sx,sy]=sc(d.x,d.y);const ds=d.w*SCALE;
+    ctx.strokeStyle='#444';ctx.lineWidth=1.5;ctx.setLineDash([]);
+    ctx.beginPath();
+    if(d.swing==='down'){ctx.moveTo(sx,sy);ctx.lineTo(sx+ds,sy);}
+    else if(d.swing==='right'){ctx.moveTo(sx,sy);ctx.lineTo(sx,sy+ds);}
+    else if(d.swing==='up'){ctx.moveTo(sx,sy);ctx.lineTo(sx+ds,sy);}
+    ctx.stroke();
+    ctx.setLineDash([2,2]);ctx.strokeStyle='#999';ctx.lineWidth=1;
+    ctx.beginPath();
+    if(d.swing==='down'){ctx.arc(sx,sy,ds,0,Math.PI/2);}
+    else if(d.swing==='right'){ctx.arc(sx,sy,ds,0,-Math.PI/2,true);}
+    else if(d.swing==='up'){ctx.arc(sx+ds,sy,ds,Math.PI,Math.PI/2,true);}
+    ctx.stroke();ctx.setLineDash([]);
+  });
+
+  // ── DIMENSION LINES ──
+  function dim(x1,y1,x2,y2,label,off,horiz){
+    const[sx1,sy1]=sc(x1,y1);const[sx2,sy2]=sc(x2,y2);
+    const ox=horiz?0:off*SCALE,oy=horiz?off*SCALE:0;
+    ctx.strokeStyle='rgba(201,98,42,.65)';ctx.lineWidth=.9;ctx.setLineDash([3,2]);
+    ctx.beginPath();ctx.moveTo(sx1+ox,sy1+oy);ctx.lineTo(sx2+ox,sy2+oy);ctx.stroke();
+    ctx.setLineDash([]);
+    [[sx1+ox,sy1+oy],[sx2+ox,sy2+oy]].forEach(([px,py])=>{
+      ctx.beginPath();ctx.strokeStyle='rgba(201,98,42,.65)';ctx.lineWidth=.9;
+      if(horiz){ctx.moveTo(px,py-5);ctx.lineTo(px,py+5)}
+      else{ctx.moveTo(px-5,py);ctx.lineTo(px+5,py)}
+      ctx.stroke();
+    });
+    ctx.fillStyle='rgba(201,98,42,.8)';
+    ctx.font=`600 ${Math.max(7,6*SCALE)}px DM Sans,sans-serif`;
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    if(horiz)ctx.fillText(label,(sx1+sx2)/2+ox,sy1+oy-10);
+    else ctx.fillText(label,sx1+ox+14,(sy1+sy2)/2+oy);
+  }
+  dim(1,1,219,1,'22.0m',-18,true);
+  dim(1,1,1,159,'16.0m',-18,false);
+  dim(1,1,100,1,'10.0m',-28,true);
+  dim(100,1,219,1,'12.0m',-28,true);
+
+  // ── NORTH ARROW ──
+  {const[ax,ay]=sc(205,148);ctx.strokeStyle='#333';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(ax,ay+14);ctx.lineTo(ax,ay-14);ctx.stroke();
+  ctx.fillStyle='#333';ctx.beginPath();ctx.moveTo(ax-5,ay-8);ctx.lineTo(ax,ay-16);ctx.lineTo(ax+5,ay-8);ctx.closePath();ctx.fill();
+  ctx.font=`700 ${8*SCALE}px DM Sans,sans-serif`;ctx.textAlign='center';ctx.fillText('N',ax,ay-20);}
+
+  // ── TITLE BLOCK ──
+  {const[tx,ty]=sc(1,162);const tw=218*SCALE;
+  ctx.strokeStyle='#333';ctx.lineWidth=1;
+  ctx.strokeRect(tx,ty,tw,22*SCALE);
+  ctx.beginPath();ctx.moveTo(tx+tw*.55,ty);ctx.lineTo(tx+tw*.55,ty+22*SCALE);ctx.stroke();
+  ctx.fillStyle='#0d0d0b';ctx.textAlign='left';ctx.textBaseline='top';
+  ctx.font=`700 ${Math.max(7,6*SCALE)}px DM Sans,sans-serif`;
+  ctx.fillText('PROJECT:',tx+4,ty+3);
+  ctx.font=`400 ${Math.max(6.5,5.5*SCALE)}px DM Sans,sans-serif`;
+  ctx.fillText('3-BEDROOM BUNGALOW · TEMA, GHANA · FLOOR PLAN',tx+4,ty+12);
+  ctx.font=`700 ${Math.max(7,6*SCALE)}px DM Sans,sans-serif`;
+  ctx.fillText('SCALE: 1:100',tx+tw*.57,ty+3);
+  ctx.font=`400 ${Math.max(6.5,5.5*SCALE)}px DM Sans,sans-serif`;
+  ctx.fillText('DATE: JUNE 2026 · GHANA AI ESTIMATOR',tx+tw*.57,ty+12);}
+
+  // ── SCALE BAR ──
+  {const[sbx,sby]=sc(5,165);const bw=40*SCALE;
+  ctx.fillStyle='#333';ctx.fillRect(sbx,sby,bw/2,5);
+  ctx.strokeStyle='#333';ctx.lineWidth=.8;
+  ctx.strokeRect(sbx,sby,bw/2,5);ctx.strokeRect(sbx+bw/2,sby,bw/2,5);
+  ctx.fillStyle='#666';ctx.font=`${Math.max(5.5,4.5*SCALE)}px DM Sans,sans-serif`;ctx.textAlign='center';
+  ctx.fillText('0',sbx,sby+11);ctx.fillText('5',sbx+bw/2,sby+11);ctx.fillText('10m',sbx+bw,sby+11);}
+}
+
+function drawAxonometric(ctx,W,H){
+  ctx.fillStyle='#0d0d0b';ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='rgba(250,247,242,.08)';ctx.font='400 14px DM Sans,sans-serif';ctx.textAlign='center';
+  ctx.fillText('3D Axonometric View — Use "3D View" tab in the full product',W/2,H/2);
+}
+
+function drawSitePlan(ctx,W,H){
+  ctx.fillStyle='#e8f4e0';ctx.fillRect(0,0,W,H);
+  const cx=W/2,cy=H/2;
+  // Plot boundary
+  ctx.strokeStyle='rgba(201,162,39,.7)';ctx.lineWidth=2;ctx.setLineDash([6,3]);
+  ctx.strokeRect(cx-180,cy-120,360,240);ctx.setLineDash([]);
+  // Setback
+  ctx.strokeStyle='rgba(201,162,39,.3)';ctx.lineWidth=1;ctx.setLineDash([3,2]);
+  ctx.strokeRect(cx-155,cy-100,310,200);ctx.setLineDash([]);
+  // House footprint
+  ctx.fillStyle='rgba(201,98,42,.15)';ctx.strokeStyle='#c9622a';ctx.lineWidth=2.5;
+  ctx.beginPath();ctx.roundRect(cx-100,cy-70,200,140,4);ctx.fill();ctx.stroke();
+  // Driveway
+  ctx.fillStyle='rgba(150,140,120,.3)';ctx.fillRect(cx-20,cy+70,40,50);
+  // Trees
+  [[cx-160,cy-90],[cx-160,cy+60],[cx+150,cy-70],[cx+140,cy+50]].forEach(([tx,ty])=>{
+    ctx.fillStyle='rgba(40,100,50,.5)';ctx.beginPath();ctx.arc(tx,ty,16,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='rgba(40,100,50,.7)';ctx.beginPath();ctx.arc(tx,ty,10,0,Math.PI*2);ctx.fill();
+  });
+  // Labels
+  ctx.fillStyle='#0d0d0b';ctx.font='700 11px DM Sans,sans-serif';ctx.textAlign='center';
+  ctx.fillText('HOUSE FOOTPRINT',cx,cy);
+  ctx.fillStyle='rgba(201,162,39,.8)';ctx.font='600 10px DM Sans,sans-serif';
+  ctx.fillText('PLOT BOUNDARY — 50 × 70ft',cx,cy-130);
+  ctx.fillStyle='rgba(13,13,11,.4)';ctx.font='9px DM Sans,sans-serif';
+  ctx.fillText('3m SETBACK (GHANA BUILDING CODE)',cx,cy-107);
+  ctx.fillStyle='rgba(76,175,118,.9)';ctx.font='700 11px DM Sans,sans-serif';
+  ctx.fillText('FITS ✓',cx,cy+16);
+}
+
+// ═══ LIFT 3D SCENE ════════════════════════════════════════════════════════
+(function(){
+  const canvas=document.getElementById('liftCanvas');
+  const wrap=document.getElementById('liftSection');
+  const W=wrap.clientWidth,H=Math.round(W*7/16);
+  canvas.width=W;canvas.height=H;
+  const renderer=mkRenderer(canvas,W,H,'#0c0c0a');
+  const scene=new THREE.Scene();scene.background=new THREE.Color(0x0c0c0a);
+  scene.fog=new THREE.Fog(0x0c0c0a,22,52);
+  const camera=mkCam(W,H,44);camera.position.set(11,7,13);camera.lookAt(0,1.5,0);
+  mkLights(scene);mkGround(scene);
+  scene.add(new THREE.GridHelper(28,28,0x1a1a18,0x141412));
+  const fill=new THREE.DirectionalLight(0x4060aa,.5);fill.position.set(-6,4,-5);scene.add(fill);
+  const ptLight=buildHouse(scene,1.1);
+
+  // Particle field
+  const pGeo=new THREE.BufferGeometry();
+  const pN=300;const pArr=new Float32Array(pN*3);
+  for(let i=0;i<pN*3;i++)pArr[i]=(Math.random()-.5)*36;
+  pGeo.setAttribute('position',new THREE.BufferAttribute(pArr,3));
+  scene.add(new THREE.Points(pGeo,new THREE.PointsMaterial({color:0xc9622a,size:.05,transparent:true,opacity:.3})));
+
+  // Drag orbit
+  let drag=false,lx=0,ca=0.5;
+  canvas.addEventListener('mousedown',e=>{drag=true;lx=e.clientX});
+  window.addEventListener('mouseup',()=>drag=false);
+  window.addEventListener('mousemove',e=>{if(drag){ca+=(e.clientX-lx)*.006;lx=e.clientX}});
+  canvas.addEventListener('wheel',e=>{
+    const d=camera.position.length();
+    if(d>6&&e.deltaY>0)camera.position.multiplyScalar(1.06);
+    if(d<22&&e.deltaY<0)camera.position.multiplyScalar(.94);
+  });
+
+  let t=0;
+  function animate(){requestAnimationFrame(animate);t+=.004;
+    if(!drag)ca+=.0025;
+    const r=14;
+    camera.position.x=Math.sin(ca)*r;camera.position.z=Math.cos(ca)*r;
+    camera.position.y=6.5+Math.sin(t*.3)*.7;camera.lookAt(0,1.5,0);
+    if(ptLight)ptLight.intensity=2.5+Math.sin(t*2)*.8;
+    renderer.render(scene,camera);
+  }
+  animate();
+  window.addEventListener('resize',()=>{
+    const nW=wrap.clientWidth;renderer.setSize(nW,Math.round(nW*7/16));
+    camera.aspect=nW/(Math.round(nW*7/16));camera.updateProjectionMatrix();
+  });
+})();
+
+// ═══ CTA CANVAS ═══════════════════════════════════════════════════════════
+(function(){
+  const canvas=document.getElementById('ctaCanvas');
+  const wrap=canvas.parentElement;
+  const W=wrap.clientWidth,H=wrap.clientHeight;
+  canvas.width=W;canvas.height=H;
+  const renderer=mkRenderer(canvas,W,H,'#141410');
+  const scene=new THREE.Scene();scene.background=new THREE.Color(0x141410);
+  const camera=mkCam(W,H,50);camera.position.set(0,5,14);camera.lookAt(0,1,0);
+  scene.add(new THREE.AmbientLight(0xffffff,.2));
+  const pt=new THREE.PointLight(0xc9622a,4,16);pt.position.set(0,4,0);scene.add(pt);
+  mkGround(scene,0x141410);
+  const dm=mkMat(0x1e1e1a,.9);
+  mkBox(scene,10,3,8,dm,0,0,0);
+  mkCone(scene,7.5,2.5,0x2a1510,0,4.25,0);
+  const wg=mkMat(0xfff5b0,.05,.1,0xfff5b0,.8);
+  [-3,-1,1,3].forEach(x=>mkBox(scene,1,.8,.04,wg,x,1.3,4.02));
+  const pGeo=new THREE.BufferGeometry();
+  const pN=500;const pArr=new Float32Array(pN*3);
+  for(let i=0;i<pN*3;i++)pArr[i]=(Math.random()-.5)*40;
+  pGeo.setAttribute('position',new THREE.BufferAttribute(pArr,3));
+  scene.add(new THREE.Points(pGeo,new THREE.PointsMaterial({color:0xc9622a,size:.06,transparent:true,opacity:.4})));
+  let t=0;
+  function animate(){requestAnimationFrame(animate);t+=.005;
+    camera.position.x=Math.sin(t*.3)*3;camera.position.z=14+Math.cos(t*.2)*1.5;camera.lookAt(0,1,0);
+    pt.intensity=3+Math.sin(t*2)*1.5;renderer.render(scene,camera);
+  }
+  animate();
+})();
+</script>
+</body>
+</html>
