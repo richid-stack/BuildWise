@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>BuildWise — Sign in</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,700;1,9..144,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+:root{
+  --ink:#0d0d0b;--ink-70:#3a3a35;--ink-40:#8a8a80;--ink-15:#e8e5df;
+  --cream:#faf7f2;--cream-2:#f3efe8;--cream-3:#ede8e0;
+  --dark:#141410;--dark-2:#1c1c17;--dark-3:#242420;
+  --accent:#c9622a;--accent-2:#e07a45;--accent-light:rgba(201,98,42,0.12);
+  --gold:#c9a227;--green:#4caf76;
+  --border:rgba(13,13,11,0.08);--bd:rgba(255,255,255,0.07);
+  --r:12px;--rl:20px;
+  --sh:0 2px 8px rgba(0,0,0,.06),0 8px 32px rgba(0,0,0,.05);
+  --shm:0 4px 20px rgba(0,0,0,.10),0 16px 48px rgba(0,0,0,.08);
+}
+body{
+  font-family:'DM Sans',sans-serif;
+  background:var(--dark);
+  color:var(--cream);
+  -webkit-font-smoothing:antialiased;
+  cursor:none;
+  display:flex;
+  min-height:100vh;
+}
+
+/* ── CURSOR ── */
+#cur{position:fixed;width:10px;height:10px;background:var(--accent);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .22s,height .22s}
+#cur-ring{position:fixed;width:36px;height:36px;border:1.5px solid rgba(201,98,42,.38);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .28s,height .28s,opacity .28s}
+
+/* ── GRAIN ── */
+#grain{position:fixed;inset:0;z-index:998;pointer-events:none;opacity:.024;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px}
+
+/* ── LEFT PANEL ── */
+.left{
+  width:440px;flex-shrink:0;
+  background:var(--dark);
+  display:flex;flex-direction:column;
+  padding:40px 48px;
+  position:relative;overflow:hidden;
+  border-right:1px solid rgba(255,255,255,.05);
+}
+.left::before{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:360px;
+  background:radial-gradient(ellipse 100% 60% at 50% 100%,rgba(201,98,42,.09),transparent);
+  pointer-events:none;
+}
+.left-logo{display:flex;align-items:center;gap:10px;margin-bottom:48px}
+.lmark{width:34px;height:34px;background:var(--accent);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.lmark svg{width:16px;height:16px}
+.lname{font-family:'Fraunces',serif;font-size:17px;color:var(--cream);font-weight:500;letter-spacing:-.3px}
+.lname span{color:var(--accent)}
+
+.left-headline{
+  font-family:'Fraunces',serif;
+  font-size:clamp(28px,3vw,38px);
+  font-weight:500;line-height:1.12;
+  letter-spacing:-.03em;
+  color:var(--cream);
+  margin-bottom:16px;
+}
+.left-headline em{font-style:italic;color:var(--accent);font-weight:300}
+.left-sub{font-size:15px;font-weight:300;line-height:1.68;color:rgba(250,247,242,.45);margin-bottom:40px}
+
+/* Testimonial card on left */
+.left-testi{
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:var(--rl);
+  padding:22px 24px;
+  margin-top:auto;
+  position:relative;z-index:2;
+}
+.testi-quote{font-size:14px;font-weight:300;line-height:1.7;color:rgba(250,247,242,.6);font-style:italic;margin-bottom:16px}
+.testi-author{display:flex;align-items:center;gap:10px}
+.testi-av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#fff;flex-shrink:0}
+.testi-name{font-size:13px;font-weight:500;color:rgba(250,247,242,.75)}
+.testi-role{font-size:11.5px;color:rgba(250,247,242,.32);margin-top:1px}
+
+/* Trust stats */
+.trust-row{display:flex;gap:20px;margin-bottom:40px}
+.trust-stat{display:flex;flex-direction:column;gap:3px}
+.trust-num{font-family:'Fraunces',serif;font-size:22px;font-weight:500;color:var(--cream);letter-spacing:-.02em}
+.trust-lbl{font-size:11px;color:rgba(250,247,242,.32)}
+.trust-divider{width:1px;background:rgba(255,255,255,.08);align-self:stretch}
+
+/* ── RIGHT PANEL ── */
+.right{
+  flex:1;display:flex;align-items:center;justify-content:center;
+  background:var(--cream-2);
+  padding:40px 32px;
+  position:relative;
+}
+
+/* ── VIEWS ── */
+.screen{display:none;width:100%;max-width:420px;animation:slideIn .35s ease}
+.screen.on{display:block}
+@keyframes slideIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+.screen-title{
+  font-family:'Fraunces',serif;
+  font-size:26px;font-weight:500;
+  color:var(--ink);letter-spacing:-.025em;
+  margin-bottom:6px;
+}
+.screen-sub{font-size:14px;font-weight:300;color:var(--ink-40);margin-bottom:32px;line-height:1.6}
+
+/* Auth tabs */
+.auth-tabs{display:flex;background:var(--cream-3);border-radius:var(--r);padding:3px;gap:0;margin-bottom:28px}
+.auth-tab{
+  flex:1;font-family:'DM Sans',sans-serif;font-size:13.5px;font-weight:400;
+  color:var(--ink-40);background:none;border:none;cursor:none;
+  padding:9px;border-radius:9px;transition:all .22s;text-align:center;
+}
+.auth-tab.on{background:var(--cream);color:var(--ink);font-weight:500;box-shadow:var(--sh)}
+
+/* Form */
+.form-group{margin-bottom:16px}
+.form-label{font-size:12.5px;font-weight:500;color:var(--ink-70);margin-bottom:6px;display:block}
+.form-input{
+  width:100%;font-family:'DM Sans',sans-serif;font-size:14px;
+  color:var(--ink);background:var(--cream);
+  border:1.5px solid var(--border);
+  border-radius:var(--r);padding:11px 14px;outline:none;
+  transition:all .18s;
+}
+.form-input:focus{border-color:var(--accent);background:#fff;box-shadow:0 0 0 3px rgba(201,98,42,.08)}
+.form-input::placeholder{color:var(--ink-40)}
+.form-input.error{border-color:var(--red,#e05a5a)}
+
+/* Phone input with flag */
+.phone-wrap{position:relative;display:flex;gap:0}
+.phone-prefix{
+  display:flex;align-items:center;gap:6px;
+  padding:11px 12px;background:var(--cream-2);
+  border:1.5px solid var(--border);border-right:none;
+  border-radius:var(--r) 0 0 var(--r);
+  font-size:13.5px;color:var(--ink-70);white-space:nowrap;cursor:none;
+  transition:border-color .18s;flex-shrink:0;
+}
+.phone-prefix span{font-size:16px}
+.phone-input{
+  flex:1;font-family:'DM Sans',sans-serif;font-size:14px;
+  color:var(--ink);background:var(--cream);
+  border:1.5px solid var(--border);border-left:none;
+  border-radius:0 var(--r) var(--r) 0;
+  padding:11px 14px;outline:none;transition:all .18s;
+}
+.phone-input:focus{border-color:var(--accent);background:#fff;}
+.phone-input:focus + .phone-prefix,
+.phone-wrap:focus-within .phone-prefix{border-color:var(--accent)}
+
+/* Password with toggle */
+.pw-wrap{position:relative}
+.pw-toggle{
+  position:absolute;right:12px;top:50%;transform:translateY(-50%);
+  background:none;border:none;cursor:none;color:var(--ink-40);
+  transition:color .15s;padding:4px;
+}
+.pw-toggle:hover{color:var(--ink)}
+.pw-toggle svg{width:16px;height:16px}
+
+/* OR divider */
+.or-divider{display:flex;align-items:center;gap:12px;margin:20px 0}
+.or-line{flex:1;height:1px;background:var(--border)}
+.or-text{font-size:12px;color:var(--ink-40)}
+
+/* Google button */
+.btn-google{
+  width:100%;display:flex;align-items:center;justify-content:center;gap:10px;
+  font-family:'DM Sans',sans-serif;font-size:14px;font-weight:400;
+  color:var(--ink-70);background:var(--cream);
+  border:1.5px solid var(--border);border-radius:var(--r);
+  padding:11px 16px;cursor:none;transition:all .18s;margin-bottom:12px;
+}
+.btn-google:hover{background:var(--cream-3);border-color:rgba(13,13,11,.14)}
+.btn-google svg{width:18px;height:18px;flex-shrink:0}
+
+/* Primary button */
+.btn-primary{
+  width:100%;font-family:'DM Sans',sans-serif;font-size:14.5px;font-weight:500;
+  color:#fff;background:var(--accent);border:none;border-radius:var(--r);
+  padding:13px 20px;cursor:none;transition:all .2s;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  margin-top:20px;
+}
+.btn-primary:hover{background:var(--accent-2);transform:translateY(-1px);box-shadow:0 8px 24px rgba(201,98,42,.32)}
+.btn-primary:active{transform:translateY(0)}
+.btn-primary svg{width:14px;height:14px}
+.btn-primary.loading{opacity:.7;pointer-events:none}
+
+/* Spinner in button */
+.btn-spin{
+  width:16px;height:16px;border:2px solid rgba(255,255,255,.3);
+  border-top-color:#fff;border-radius:50%;
+  animation:spin .7s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Error message */
+.form-error{font-size:12px;color:#e05a5a;margin-top:5px;display:none}
+.form-error.on{display:block}
+
+/* Terms */
+.terms{font-size:12px;color:var(--ink-40);text-align:center;margin-top:14px;line-height:1.55}
+.terms a{color:var(--accent);text-decoration:none}
+.terms a:hover{opacity:.8}
+
+/* Switch auth */
+.switch-auth{font-size:13px;color:var(--ink-40);text-align:center;margin-top:20px}
+.switch-auth a{color:var(--accent);font-weight:500;cursor:none;text-decoration:none}
+.switch-auth a:hover{opacity:.8}
+
+/* ── ONBOARDING ── */
+.onboard-step{display:none;width:100%;max-width:520px;animation:slideIn .35s ease}
+.onboard-step.on{display:block}
+
+.step-indicator{display:flex;align-items:center;gap:6px;margin-bottom:32px}
+.step-dot{width:8px;height:8px;border-radius:50%;background:var(--cream-3);transition:all .3s}
+.step-dot.on{background:var(--accent);width:24px;border-radius:4px}
+.step-dot.done{background:var(--green)}
+
+.ob-title{font-family:'Fraunces',serif;font-size:26px;font-weight:500;color:var(--ink);letter-spacing:-.025em;margin-bottom:8px}
+.ob-sub{font-size:14px;font-weight:300;color:var(--ink-40);margin-bottom:28px;line-height:1.6}
+
+/* Persona cards */
+.persona-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:24px}
+.persona-card{
+  border:2px solid var(--border);border-radius:var(--rl);
+  padding:22px 16px;text-align:center;cursor:none;
+  transition:all .22s;background:var(--cream);
+}
+.persona-card:hover{border-color:rgba(201,98,42,.3);transform:translateY(-2px)}
+.persona-card.on{border-color:var(--accent);background:rgba(201,98,42,.03)}
+.persona-card-ico{
+  width:48px;height:48px;border-radius:12px;background:var(--cream-2);
+  display:flex;align-items:center;justify-content:center;margin:0 auto 12px;
+  transition:all .22s;
+}
+.persona-card.on .persona-card-ico{background:var(--accent-light)}
+.persona-card-ico svg{width:22px;height:22px;color:var(--ink-40)}
+.persona-card.on .persona-card-ico svg{color:var(--accent)}
+.persona-card-name{font-size:13.5px;font-weight:500;color:var(--ink);margin-bottom:4px}
+.persona-card-desc{font-size:12px;color:var(--ink-40);line-height:1.5}
+
+/* City selector */
+.city-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.city-btn{
+  border:1.5px solid var(--border);border-radius:var(--r);
+  padding:12px 16px;cursor:none;transition:all .2s;
+  background:var(--cream);display:flex;align-items:center;gap:10px;
+  font-family:'DM Sans',sans-serif;font-size:13.5px;font-weight:400;color:var(--ink-70);
+}
+.city-btn:hover{border-color:rgba(201,98,42,.25);background:rgba(201,98,42,.02)}
+.city-btn.on{border-color:var(--accent);background:rgba(201,98,42,.04);color:var(--ink);font-weight:500}
+.city-dot{width:8px;height:8px;border-radius:50%;background:var(--cream-3);flex-shrink:0;transition:all .2s}
+.city-btn.on .city-dot{background:var(--accent)}
+
+/* Experience selector */
+.exp-grid{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
+.exp-btn{
+  border:1.5px solid var(--border);border-radius:var(--r);
+  padding:14px 18px;cursor:none;transition:all .2s;
+  background:var(--cream);display:flex;align-items:center;gap:13px;
+  font-family:'DM Sans',sans-serif;
+}
+.exp-btn:hover{border-color:rgba(201,98,42,.25)}
+.exp-btn.on{border-color:var(--accent);background:rgba(201,98,42,.03)}
+.exp-check{
+  width:20px;height:20px;border-radius:50%;border:1.5px solid var(--border);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .22s;
+}
+.exp-btn.on .exp-check{background:var(--accent);border-color:var(--accent)}
+.exp-btn.on .exp-check svg{display:block}
+.exp-check svg{display:none;width:10px;height:10px}
+.exp-label{font-size:13.5px;font-weight:500;color:var(--ink)}
+.exp-desc{font-size:12px;color:var(--ink-40);margin-top:2px}
+
+/* Progress bar for onboarding */
+.ob-progress{height:3px;background:var(--cream-3);border-radius:2px;margin-bottom:32px;overflow:hidden}
+.ob-progress-fill{height:100%;background:var(--accent);border-radius:2px;transition:width .4s ease}
+
+/* Success screen */
+.success-icon{
+  width:64px;height:64px;background:rgba(76,175,118,.1);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;margin:0 auto 20px;
+  animation:popIn .5s cubic-bezier(.2,1.6,.4,1) forwards;
+}
+@keyframes popIn{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+.success-icon svg{width:28px;height:28px;color:var(--green)}
+.success-title{font-family:'Fraunces',serif;font-size:28px;font-weight:500;color:var(--ink);letter-spacing:-.025em;text-align:center;margin-bottom:8px}
+.success-sub{font-size:14px;color:var(--ink-40);text-align:center;line-height:1.65;max-width:340px;margin:0 auto 28px}
+
+/* ── BACK BUTTON ── */
+.back-btn{
+  display:flex;align-items:center;gap:6px;
+  font-size:13px;color:var(--ink-40);cursor:none;
+  background:none;border:none;margin-bottom:24px;
+  transition:color .18s;padding:0;
+}
+.back-btn:hover{color:var(--ink)}
+.back-btn svg{width:13px;height:13px}
+
+/* ── MOBILE ── */
+@media(max-width:768px){
+  body{flex-direction:column}
+  .left{width:100%;padding:28px 24px 32px;border-right:none;border-bottom:1px solid rgba(255,255,255,.05)}
+  .left-headline{font-size:24px}
+  .left-sub{font-size:13.5px;margin-bottom:24px}
+  .left-testi{display:none}
+  .trust-row{gap:14px}
+  .right{padding:28px 20px;align-items:flex-start}
+  .screen,.onboard-step{max-width:100%}
+  .persona-grid{grid-template-columns:1fr}
+  .city-grid{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<div id="grain"></div>
+<div id="cur"></div>
+<div id="cur-ring"></div>
+
+<!-- ════════ LEFT PANEL ════════ -->
+<div class="left" id="leftPanel">
+  <a href="Index.html" style="text-decoration:none"><div class="left-logo">
+    <div class="lmark">
+      <svg viewBox="0 0 16 16" fill="none">
+        <path d="M2.5 13.5V7L8 2L13.5 7V13.5H9.5V10H6.5V13.5H2.5Z" stroke="white" stroke-width="1.7" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <span class="lname">Build<span>Wise</span></span>
+  </div></a>
+
+  <h1 class="left-headline" id="leftHeadline">Know what your<br>house will <em>cost</em><br>before you build.</h1>
+  <p class="left-sub" id="leftSub">Join 12,000+ builders across Ghana who stopped guessing and started building with confidence.</p>
+
+  <div class="trust-row">
+    <div class="trust-stat">
+      <div class="trust-num">12k+</div>
+      <div class="trust-lbl">Builders using BuildWise</div>
+    </div>
+    <div class="trust-divider"></div>
+    <div class="trust-stat">
+      <div class="trust-num">96.2%</div>
+      <div class="trust-lbl">Estimate accuracy</div>
+    </div>
+    <div class="trust-divider"></div>
+    <div class="trust-stat">
+      <div class="trust-num">GHS 0</div>
+      <div class="trust-lbl">To get started</div>
+    </div>
+  </div>
+
+  <div class="left-testi">
+    <div class="testi-quote" id="testiQuote">"My contractor quoted GHS 85k. BuildWise showed GHS 143k. He forgot the electrics, the ceiling, and the finishing. Three big things."</div>
+    <div class="testi-author">
+      <div class="testi-av" id="testiAv" style="background:#2d6a4f">KO</div>
+      <div>
+        <div class="testi-name" id="testiName">Kwame Osei</div>
+        <div class="testi-role" id="testiRole">Building in Tema, Greater Accra</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ RIGHT PANEL ════════ -->
+<div class="right" id="rightPanel">
+  <a href="Index.html" style="position:absolute;top:20px;left:24px;font-size:12.5px;color:var(--ink-40);text-decoration:none;display:flex;align-items:center;gap:5px;transition:color .15s;z-index:10" onmouseover="this.style.color='var(--ink)'" onmouseout="this.style.color='var(--ink-40)'">
+    <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8 2L4 6L8 10" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Back to home
+  </a>
+
+  <!-- ── SIGN IN ── -->
+  <div class="screen on" id="screen-signin">
+    <div class="auth-tabs">
+      <button class="auth-tab on" onclick="switchAuth('signin')">Sign in</button>
+      <button class="auth-tab" onclick="switchAuth('signup')">Create account</button>
+    </div>
+
+    <button class="btn-google" onclick="handleGoogle()">
+      <svg viewBox="0 0 18 18" fill="none">
+        <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 01-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/>
+        <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z" fill="#34A853"/>
+        <path d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
+        <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
+      </svg>
+      Continue with Google
+    </button>
+
+    <button class="btn-google" onclick="handlePhone()" style="gap:10px">
+      <svg viewBox="0 0 18 18" fill="none">
+        <rect x="3" y="1" width="12" height="16" rx="2.5" stroke="#4caf76" stroke-width="1.4"/>
+        <circle cx="9" cy="14" r="1" fill="#4caf76"/>
+        <path d="M6.5 4h5" stroke="#4caf76" stroke-width="1.3" stroke-linecap="round"/>
+      </svg>
+      Continue with phone number
+    </button>
+
+    <div class="or-divider">
+      <div class="or-line"></div>
+      <span class="or-text">or sign in with email</span>
+      <div class="or-line"></div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Email address</label>
+      <input class="form-input" type="email" placeholder="kwame@example.com" id="signinEmail"/>
+      <div class="form-error" id="signinEmailErr">Please enter a valid email address</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <div class="pw-wrap">
+        <input class="form-input" type="password" placeholder="Your password" id="signinPw" style="padding-right:44px"/>
+        <button class="pw-toggle" onclick="togglePw('signinPw',this)" tabindex="-1">
+          <svg id="eyeIcon" viewBox="0 0 16 16" fill="none"><path d="M1 8C1 8 3.5 3 8 3C12.5 3 15 8 15 8C15 8 12.5 13 8 13C3.5 13 1 8 1 8Z" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="8" r="2.5" stroke="currentColor" stroke-width="1.3"/></svg>
+        </button>
+      </div>
+      <div class="form-error" id="signinPwErr">Wrong password. Try again or reset it below.</div>
+    </div>
+
+    <div style="text-align:right;margin-top:-8px;margin-bottom:4px">
+      <a href="#" style="font-size:12.5px;color:var(--accent);text-decoration:none" onclick="showScreen('reset')">Forgot password?</a>
+    </div>
+
+    <button class="btn-primary" onclick="handleSignIn()" id="signinBtn">
+      <span id="signinBtnText">Sign in to BuildWise</span>
+      <svg viewBox="0 0 14 14" fill="none"><path d="M3 7h8M8 4.5L10.5 7L8 9.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+
+    <div class="switch-auth">Don't have an account? <a onclick="switchAuth('signup')">Create one free</a></div>
+  </div>
+
+  <!-- ── SIGN UP ── -->
+  <div class="screen" id="screen-signup">
+    <div class="auth-tabs">
+      <button class="auth-tab" onclick="switchAuth('signin')">Sign in</button>
+      <button class="auth-tab on" onclick="switchAuth('signup')">Create account</button>
+    </div>
+
+    <button class="btn-google" onclick="handleGoogle()">
+      <svg viewBox="0 0 18 18" fill="none">
+        <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 01-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/>
+        <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z" fill="#34A853"/>
+        <path d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
+        <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
+      </svg>
+      Sign up with Google
+    </button>
+
+    <div class="or-divider">
+      <div class="or-line"></div>
+      <span class="or-text">or create with email</span>
+      <div class="or-line"></div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="form-group">
+        <label class="form-label">First name</label>
+        <input class="form-input" type="text" placeholder="Kwame" id="signupFirst"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Last name</label>
+        <input class="form-input" type="text" placeholder="Osei" id="signupLast"/>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Email address</label>
+      <input class="form-input" type="email" placeholder="kwame@example.com" id="signupEmail"/>
+      <div class="form-error" id="signupEmailErr">Please enter a valid email address</div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Phone number (WhatsApp)</label>
+      <div class="phone-wrap">
+        <div class="phone-prefix"><span>🇬🇭</span> +233</div>
+        <input class="phone-input" type="tel" placeholder="24 123 4567" id="signupPhone"/>
+      </div>
+      <div style="font-size:11.5px;color:var(--ink-40);margin-top:5px">We'll send your estimates here too</div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Create a password</label>
+      <div class="pw-wrap">
+        <input class="form-input" type="password" placeholder="At least 8 characters" id="signupPw" style="padding-right:44px" oninput="checkPwStrength(this.value)"/>
+        <button class="pw-toggle" onclick="togglePw('signupPw',this)" tabindex="-1">
+          <svg viewBox="0 0 16 16" fill="none"><path d="M1 8C1 8 3.5 3 8 3C12.5 3 15 8 15 8C15 8 12.5 13 8 13C3.5 13 1 8 1 8Z" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="8" r="2.5" stroke="currentColor" stroke-width="1.3"/></svg>
+        </button>
+      </div>
+      <div id="pwStrength" style="display:flex;gap:4px;margin-top:6px">
+        <div style="flex:1;height:3px;border-radius:2px;background:var(--cream-3)" id="ps1"></div>
+        <div style="flex:1;height:3px;border-radius:2px;background:var(--cream-3)" id="ps2"></div>
+        <div style="flex:1;height:3px;border-radius:2px;background:var(--cream-3)" id="ps3"></div>
+        <div style="flex:1;height:3px;border-radius:2px;background:var(--cream-3)" id="ps4"></div>
+      </div>
+    </div>
+
+    <button class="btn-primary" onclick="handleSignUp()" id="signupBtn">
+      <span>Create my free account</span>
+      <svg viewBox="0 0 14 14" fill="none"><path d="M3 7h8M8 4.5L10.5 7L8 9.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+
+    <div class="terms">By creating an account you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a>.</div>
+    <div class="switch-auth">Already have an account? <a onclick="switchAuth('signin')">Sign in</a></div>
+  </div>
+
+  <!-- ── RESET PASSWORD ── -->
+  <div class="screen" id="screen-reset">
+    <button class="back-btn" onclick="showScreen('signin')">
+      <svg viewBox="0 0 13 13" fill="none"><path d="M8.5 2L4 6.5L8.5 11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Back to sign in
+    </button>
+    <div class="screen-title">Reset your password</div>
+    <div class="screen-sub">Enter your email and we'll send you a link to reset your password.</div>
+    <div class="form-group">
+      <label class="form-label">Your email address</label>
+      <input class="form-input" type="email" placeholder="kwame@example.com" id="resetEmail"/>
+    </div>
+    <button class="btn-primary" onclick="handleReset()">
+      <span>Send reset link</span>
+      <svg viewBox="0 0 14 14" fill="none"><path d="M3 7h8M8 4.5L10.5 7L8 9.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+
+  <!-- ── PHONE VERIFY ── -->
+  <div class="screen" id="screen-phone">
+    <button class="back-btn" onclick="showScreen('signin')">
+      <svg viewBox="0 0 13 13" fill="none"><path d="M8.5 2L4 6.5L8.5 11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Back
+    </button>
+    <div class="screen-title">Enter your number</div>
+    <div class="screen-sub">We'll send a 6-digit code to your WhatsApp.</div>
+    <div class="form-group">
+      <label class="form-label">WhatsApp / phone number</label>
+      <div class="phone-wrap">
+        <div class="phone-prefix"><span>🇬🇭</span> +233</div>
+        <input class="phone-input" type="tel" placeholder="24 123 4567" id="phoneNum"/>
+      </div>
+    </div>
+    <button class="btn-primary" onclick="handleSendOTP()">
+      <span>Send code to WhatsApp</span>
+      <svg viewBox="0 0 14 14" fill="none"><path d="M3 7h8M8 4.5L10.5 7L8 9.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+
+  <!-- ── OTP VERIFY ── -->
+  <div class="screen" id="screen-otp">
+    <button class="back-btn" onclick="showScreen('phone')">
+      <svg viewBox="0 0 13 13" fill="none"><path d="M8.5 2L4 6.5L8.5 11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Change number
+    </button>
+    <div class="screen-title">Enter the 6-digit code</div>
+    <div class="screen-sub">We sent a code to your WhatsApp. It expires in 10 minutes.</div>
+    <div style="display:flex;gap:10px;margin-bottom:20px" id="otpInputs">
+      <input class="form-input" type="text" maxlength="1" style="text-align:center;font-size:22px;font-weight:600;padding:14px 0;flex:1" oninput="otpMove(this,0)"/>
+      <input class="form-input" type="text" maxlength="1" style="text-align:center;font-size:22px;font-weight:600;padding:14px 0;flex:1" oninput="otpMove(this,1)"/>
+      <input class="form-input" type="text" maxlength="1" style="text-align:center;font-size:22px;font-weight:600;padding:14px 0;flex:1" oninput="otpMove(this,2)"/>
+      <input class="form-input" type="text" maxlength="1" style="text-align:center;font-size:22px;font-weight:600;padding:14px 0;flex:1" oninput="otpMove(this,3)"/>
+      <input class="form-input" type="text" maxlength="1" style="text-align:center;font-size:22px;font-weight:600;padding:14px 0;flex:1" oninput="otpMove(this,4)"/>
+      <input class="form-input" type="text" maxlength="1" style="text-align:center;font-size:22px;font-weight:600;padding:14px 0;flex:1" oninput="otpMove(this,5)" onkeyup="checkOTP()"/>
+    </div>
+    <div style="font-size:13px;color:var(--ink-40);text-align:center">Didn't get it? <a href="#" style="color:var(--accent);text-decoration:none" onclick="handleSendOTP()">Send again</a></div>
+    <button class="btn-primary" onclick="handleVerifyOTP()" style="margin-top:20px">
+      <span>Verify and continue</span>
+      <svg viewBox="0 0 14 14" fill="none"><path d="M3 7h8M8 4.5L10.5 7L8 9.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+
+  <!-- ════════ ONBOARDING STEPS ════════ -->
+
+  <!-- Step 1: Who are you? -->
+  <div class="onboard-step" id="ob-step1">
+    <div class="ob-progress"><div class="ob-progress-fill" style="width:25%"></div></div>
+    <div class="step-indicator">
+      <div class="step-dot on"></div>
+      <div class="step-dot"></div>
+      <div class="step-dot"></div>
+      <div class="step-dot"></div>
+    </div>
+    <div class="ob-title">Welcome to BuildWise! 👋</div>
+    <div class="ob-sub">Tell us a bit about yourself so we can set things up the right way for you.</div>
+    <div class="persona-grid">
+      <div class="persona-card" id="pc-homeowner" onclick="selectPersona('homeowner')">
+        <div class="persona-card-ico">
+          <svg viewBox="0 0 22 22" fill="none"><path d="M3 19V10L11 3L19 10V19H14V14H8V19H3Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="persona-card-name">I'm building<br>my own house</div>
+        <div class="persona-card-desc">Homeowner or self-builder</div>
+      </div>
+      <div class="persona-card" id="pc-contractor" onclick="selectPersona('contractor')">
+        <div class="persona-card-ico">
+          <svg viewBox="0 0 22 22" fill="none"><rect x="3" y="3" width="16" height="16" rx="3" stroke="currentColor" stroke-width="1.6"/><path d="M7 11h8M7 7.5h8M7 14.5h5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        </div>
+        <div class="persona-card-name">I'm a contractor<br>or estimator</div>
+        <div class="persona-card-desc">Builder, foreman, or mason</div>
+      </div>
+      <div class="persona-card" id="pc-diaspora" onclick="selectPersona('diaspora')">
+        <div class="persona-card-ico">
+          <svg viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="8.5" stroke="currentColor" stroke-width="1.6"/><path d="M3 11h16M11 2.5C9 6 8 8.5 8 11s1 5 3 8.5M11 2.5C13 6 14 8.5 14 11s-1 5-3 8.5" stroke="currentColor" stroke-width="1.3"/></svg>
+        </div>
+        <div class="persona-card-name">I'm abroad,<br>building in Ghana</div>
+        <div class="persona-card-desc">Diaspora or remote builder</div>
+      </div>
+    </div>
+    <button class="btn-primary" onclick="goToStep(2)" id="ob-btn1" style="opacity:.4;pointer-events:none">
+      <span>Continue</span>
+      <svg viewBox="0 0 14 14" fill="none"><path d="M3 7h8M8 4.5L10.5 7L8 9.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+
+  <!-- Step 2: Where are you building? -->
+  <div class="onboard-step" id="ob-step2">
+    <div class="ob-progress"><div class="ob-progress-fill" style="width:50%"></div></div>
+    <div class="step-indicator">
+      <div class="step-dot done"></div>
+      <div class="step-dot on"></div>
+      <div class="step-dot"></div>
+      <div class="step-dot"></div>
+    </div>
+    <button class="back-btn" onclick="goToStep(1)">
+      <svg viewBox="0 0 13 13" fill="none"><path d="M8.5 2L4 6.5L8.5 11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Back
+    </button>
+    <div class="ob-title">Where are you building?</div>
+    <div class="ob-sub">We use this to show you the right prices — cement costs different in Accra vs Kumasi vs Takoradi.</div>
+    <div class="city-grid">
+      <div class="city-btn" id="city-accra" onclick="selectCity('accra')"><div class="city-dot"></div>Accra / Tema</div>
+      <div class="city-btn" id="city-kumasi" onclick="selectCity('kumasi')"><div class="city-dot"></div>Kumasi</div>
+      <div class="city-btn" id="city-takoradi" onclick="selectCity('takoradi')"><div class="city-dot"></div>Takoradi / Sekondi</div>
+      <div class="city-btn" id="city-tamale" onclick="selectCity('tamale')"><div class="city-dot"></div>Tamale</div>
+      <div class="city-btn" id="city-cape" onclick="selectCity('cape')"><div class="city-dot"></div>Cape Coast</div>
+      <div class="city-btn" id="city-other" onclick="selectCity('other')"><div class="city-dot"></div>Somewhere else</div>
+    </div>
+    <div class="form-group" id="cityOtherInput" style="display:none">
+      <label class="form-label">Which city or town?</label>
+      <input class="form-input" type="text" placeholder="e.g. Kasoa, Koforidua, Ho..."/>
+    </div>
+    <button class="btn-primary" onclick="goToStep(3)" id="ob-btn2" style="opacity:.4;pointer-events:none">
+      <span>Continue</span>
+      <svg viewBox="0 0 14 14" fill="none"><path d="M3 7h8M8 4.5L10.5 7L8 9.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+
+  <!-- Step 3: Experience level -->
+  <div class="onboard-step" id="ob-step3">
+    <div class="ob-progress"><div class="ob-progress-fill" style="width:75%"></div></div>
+    <div class="step-indicator">
+      <div class="step-dot done"></div>
+      <div class="step-dot done"></div>
+      <div class="step-dot on"></div>
+      <div class="step-dot"></div>
+    </div>
+    <button class="back-btn" onclick="goToStep(2)">
+      <svg viewBox="0 0 13 13" fill="none"><path d="M8.5 2L4 6.5L8.5 11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Back
+    </button>
+    <div class="ob-title">How familiar are you<br>with building costs?</div>
+    <div class="ob-sub">This helps us explain things at the right level — no judgment, we're all learning.</div>
+    <div class="exp-grid">
+      <div class="exp-btn" id="exp-new" onclick="selectExp('new')">
+        <div class="exp-check"><svg viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div>
+          <div class="exp-label">I'm new to building</div>
+          <div class="exp-desc">First time building — I need everything explained simply</div>
+        </div>
+      </div>
+      <div class="exp-btn" id="exp-some" onclick="selectExp('some')">
+        <div class="exp-check"><svg viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div>
+          <div class="exp-label">I know some things</div>
+          <div class="exp-desc">I've been involved in construction before but not an expert</div>
+        </div>
+      </div>
+      <div class="exp-btn" id="exp-pro" onclick="selectExp('pro')">
+        <div class="exp-check"><svg viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div>
+          <div class="exp-label">I'm a professional</div>
+          <div class="exp-desc">Contractor, foreman, or I work in construction every day</div>
+        </div>
+      </div>
+    </div>
+    <button class="btn-primary" onclick="goToStep(4)" id="ob-btn3" style="opacity:.4;pointer-events:none">
+      <span>Almost done!</span>
+      <svg viewBox="0 0 14 14" fill="none"><path d="M3 7h8M8 4.5L10.5 7L8 9.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+
+  <!-- Step 4: What do you want to do first? -->
+  <div class="onboard-step" id="ob-step4">
+    <div class="ob-progress"><div class="ob-progress-fill" style="width:95%"></div></div>
+    <div class="step-indicator">
+      <div class="step-dot done"></div>
+      <div class="step-dot done"></div>
+      <div class="step-dot done"></div>
+      <div class="step-dot on"></div>
+    </div>
+    <button class="back-btn" onclick="goToStep(3)">
+      <svg viewBox="0 0 13 13" fill="none"><path d="M8.5 2L4 6.5L8.5 11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Back
+    </button>
+    <div class="ob-title">What do you want<br>to do first?</div>
+    <div class="ob-sub">We'll take you straight there after this.</div>
+    <div class="exp-grid">
+      <div class="exp-btn" id="first-plan" onclick="selectFirst('plan')">
+        <div class="exp-check"><svg viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div>
+          <div class="exp-label">Read my house plan</div>
+          <div class="exp-desc">Upload a photo and get the full cost in 8 seconds</div>
+        </div>
+      </div>
+      <div class="exp-btn" id="first-boq" onclick="selectFirst('boq')">
+        <div class="exp-check"><svg viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div>
+          <div class="exp-label">Build my own cost list</div>
+          <div class="exp-desc">Enter my own prices and get a professional PDF</div>
+        </div>
+      </div>
+      <div class="exp-btn" id="first-prices" onclick="selectFirst('prices')">
+        <div class="exp-check"><svg viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div>
+          <div class="exp-label">Check today's prices</div>
+          <div class="exp-desc">See what cement, blocks, and rods cost today in Ghana</div>
+        </div>
+      </div>
+    </div>
+    <button class="btn-primary" onclick="finishOnboarding()" id="ob-btn4" style="opacity:.4;pointer-events:none">
+      <span>Take me to BuildWise</span>
+      <svg viewBox="0 0 14 14" fill="none"><path d="M3 7h8M8 4.5L10.5 7L8 9.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+
+  <!-- ── SUCCESS ── -->
+  <div class="onboard-step" id="ob-success" style="text-align:center">
+    <div class="success-icon">
+      <svg viewBox="0 0 28 28" fill="none"><path d="M5 14l6 6L23 8" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="success-title">You're all set! 🎉</div>
+    <div class="success-sub">Your BuildWise account is ready. Let's go see how much your house really costs.</div>
+    <button class="btn-primary" style="max-width:320px;margin:0 auto" onclick="goToApp()">
+      <span id="successBtnText">Open BuildWise</span>
+      <svg viewBox="0 0 14 14" fill="none"><path d="M3 7h8M8 4.5L10.5 7L8 9.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div style="font-size:12.5px;color:var(--ink-40);margin-top:14px">Free plan — no card needed</div>
+  </div>
+
+</div><!-- end right -->
+
+<script>
+// ── CURSOR ────────────────────────────────────────────────────────────
+const $c=document.getElementById('cur'),$r=document.getElementById('cur-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;$c.style.left=mx+'px';$c.style.top=my+'px'});
+(function loop(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;$r.style.left=rx+'px';$r.style.top=ry+'px';requestAnimationFrame(loop)})();
+document.querySelectorAll('a,button,input').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{$c.style.width='16px';$c.style.height='16px';$r.style.width='48px';$r.style.height='48px'});
+  el.addEventListener('mouseleave',()=>{$c.style.width='10px';$c.style.height='10px';$r.style.width='36px';$r.style.height='36px'});
+});
+
+// ── STATE ─────────────────────────────────────────────────────────────
+let selectedPersona = null;
+let selectedCity = null;
+let selectedExp = null;
+let selectedFirst = null;
+
+// ── SCREEN ROUTER ─────────────────────────────────────────────────────
+function showScreen(id){
+  document.querySelectorAll('.screen,.onboard-step').forEach(s=>s.classList.remove('on'));
+  const el=document.getElementById('screen-'+id)||document.getElementById('ob-'+id);
+  if(el)el.classList.add('on');
+  updateLeftPanel(id);
+}
+
+function updateLeftPanel(id){
+  const headlines={
+    signin:'Know what your\nhouse will cost\nbefore you build.',
+    signup:'Join 12,000+\nbuilders across\nGhana.',
+    reset:'Reset your\npassword.',
+    phone:'Sign in with\nyour WhatsApp.',
+    otp:'Enter your\nverification code.',
+    step1:'Tell us about\nyourself.',
+    step2:'Local prices\nfor your city.',
+    step3:'We adjust the\nexplanations for you.',
+    step4:'One last thing.',
+    success:'Welcome to\nBuildWise! 🎉',
+  };
+  const subs={
+    signin:'Join 12,000+ builders across Ghana who stopped guessing and started building with confidence.',
+    signup:'Free to start. No card needed. Get your first estimate in 8 seconds.',
+    step1:'Every builder is different. Homeowner, contractor, or diaspora — we set up the right experience for you.',
+    step2:'Cement costs GHS 78 in Accra but prices vary. We use local supplier data updated every morning.',
+    step3:'No judgment. We just want to explain things in a way that makes sense to you.',
+    step4:'We\'ll take you straight there when you open BuildWise.',
+    success:'Your account is ready. Everything is set up for you. Time to see what your house really costs.',
+  };
+  const hl=headlines[id]||headlines.signin;
+  const sb=subs[id]||subs.signin;
+  const hlEl=document.getElementById('leftHeadline');
+  const sbEl=document.getElementById('leftSub');
+  if(hlEl){
+    hlEl.innerHTML=hl.replace(/\n/g,'<br>').replace('cost','<em>cost</em>');
+  }
+  if(sbEl)sbEl.textContent=sb;
+
+  // Rotate testimonials
+  const testis=[
+    {q:'"My contractor quoted GHS 85k. BuildWise showed GHS 143k. He forgot the electrics, the ceiling, and the finishing."',n:'Kwame Osei',r:'Building in Tema',av:'KO',bg:'#2d6a4f'},
+    {q:'"I used the bank pack PDF to apply for a GCB loan. Approved in 10 days. Best thing I\'ve done for my build."',n:'Abena Asante',r:'Self-build, Kumasi',av:'AA',bg:'#7b2d8b'},
+    {q:'"I\'m in London, my family is building in Accra. BuildWise lets me see every detail without being there."',n:'Emmanuel Yeboah',r:'Diaspora build, East Legon',av:'EY',bg:'#c9622a'},
+  ];
+  const t=testis[Math.floor(Math.random()*testis.length)];
+  const qEl=document.getElementById('testiQuote'),nEl=document.getElementById('testiName'),rEl=document.getElementById('testiRole'),aEl=document.getElementById('testiAv');
+  if(qEl)qEl.textContent=t.q;if(nEl)nEl.textContent=t.n;if(rEl)rEl.textContent=t.r;
+  if(aEl){aEl.textContent=t.av;aEl.style.background=t.bg;}
+}
+
+// ── AUTH TABS ─────────────────────────────────────────────────────────
+function switchAuth(mode){
+  document.querySelectorAll('.auth-tab').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
+  const screen=document.getElementById('screen-'+mode);
+  if(screen)screen.classList.add('on');
+  const tabs=document.querySelectorAll('.auth-tab');
+  if(mode==='signin')tabs[0].classList.add('on');
+  else tabs[1].classList.add('on');
+  updateLeftPanel(mode);
+}
+
+// ── AUTH HANDLERS ─────────────────────────────────────────────────────
+function handleSignIn(){
+  const email=document.getElementById('signinEmail').value.trim();
+  const pw=document.getElementById('signinPw').value;
+  if(!email||!email.includes('@')){
+    document.getElementById('signinEmailErr').classList.add('on');
+    document.getElementById('signinEmail').classList.add('error');
+    return;
+  }
+  document.getElementById('signinEmailErr').classList.remove('on');
+  document.getElementById('signinEmail').classList.remove('error');
+  // Simulate loading
+  const btn=document.getElementById('signinBtn');
+  btn.innerHTML='<div class="btn-spin"></div>';
+  btn.classList.add('loading');
+  setTimeout(()=>{
+    btn.classList.remove('loading');
+    btn.innerHTML='<span>Sign in to BuildWise</span><svg viewBox="0 0 14 14" fill="none"><path d="M3 7h8M8 4.5L10.5 7L8 9.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    // For demo — existing user goes straight to app
+    window.location.href='buildwise-app.html';
+  },1400);
+}
+
+function handleSignUp(){
+  const email=document.getElementById('signupEmail').value.trim();
+  const pw=document.getElementById('signupPw').value;
+  if(!email||!email.includes('@')){
+    document.getElementById('signupEmailErr').classList.add('on');
+    return;
+  }
+  document.getElementById('signupEmailErr').classList.remove('on');
+  const btn=document.getElementById('signupBtn');
+  btn.innerHTML='<div class="btn-spin"></div>';
+  btn.classList.add('loading');
+  setTimeout(()=>{
+    btn.classList.remove('loading');
+    btn.innerHTML='<span>Create my free account</span><svg viewBox="0 0 14 14" fill="none"><path d="M3 7h8M8 4.5L10.5 7L8 9.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    // New user → onboarding
+    startOnboarding();
+  },1400);
+}
+
+function handleGoogle(){
+  const btn=event.currentTarget;
+  btn.innerHTML='<div class="btn-spin" style="border-color:rgba(13,13,11,.2);border-top-color:var(--ink)"></div> Connecting...';
+  setTimeout(()=>{startOnboarding();},1200);
+}
+
+function handlePhone(){showScreen('phone')}
+
+function handleSendOTP(){
+  const num=document.getElementById('phoneNum')?.value;
+  if(!num){return;}
+  showScreen('otp');
+}
+
+function handleVerifyOTP(){
+  startOnboarding();
+}
+
+function otpMove(input,idx){
+  if(input.value.length===1){
+    const inputs=document.querySelectorAll('#otpInputs input');
+    if(idx<5)inputs[idx+1].focus();
+  }
+}
+function checkOTP(){
+  const inputs=document.querySelectorAll('#otpInputs input');
+  const code=[...inputs].map(i=>i.value).join('');
+  if(code.length===6){handleVerifyOTP();}
+}
+
+function handleReset(){
+  const email=document.getElementById('resetEmail').value.trim();
+  if(!email)return;
+  const btn=event.currentTarget;
+  btn.innerHTML='<div class="btn-spin"></div>';
+  setTimeout(()=>{
+    btn.innerHTML='<span>Email sent! Check your inbox</span>';
+    btn.style.background='var(--green)';
+  },1000);
+}
+
+// ── PASSWORD ──────────────────────────────────────────────────────────
+function togglePw(id,btn){
+  const input=document.getElementById(id);
+  const isText=input.type==='text';
+  input.type=isText?'password':'text';
+  btn.innerHTML=isText
+    ?'<svg viewBox="0 0 16 16" fill="none"><path d="M1 8C1 8 3.5 3 8 3C12.5 3 15 8 15 8C15 8 12.5 13 8 13C3.5 13 1 8 1 8Z" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="8" r="2.5" stroke="currentColor" stroke-width="1.3"/></svg>'
+    :'<svg viewBox="0 0 16 16" fill="none"><path d="M1 8C1 8 3.5 3 8 3C12.5 3 15 8 15 8" stroke="currentColor" stroke-width="1.3"/><path d="M15 8C15 8 12.5 13 8 13C3.5 13 1 8 1 8" stroke="currentColor" stroke-width="1.3"/><path d="M3 3L13 13" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>';
+}
+
+function checkPwStrength(val){
+  const bars=[document.getElementById('ps1'),document.getElementById('ps2'),document.getElementById('ps3'),document.getElementById('ps4')];
+  let score=0;
+  if(val.length>=8)score++;
+  if(/[A-Z]/.test(val))score++;
+  if(/[0-9]/.test(val))score++;
+  if(/[^A-Za-z0-9]/.test(val))score++;
+  const colors=['#e05a5a','#c9a227','#4a7fd4','#4caf76'];
+  bars.forEach((b,i)=>{b.style.background=i<score?colors[score-1]:'var(--cream-3)'});
+}
+
+// ── ONBOARDING ────────────────────────────────────────────────────────
+function startOnboarding(){
+  document.querySelectorAll('.screen,.onboard-step').forEach(s=>s.classList.remove('on'));
+  document.getElementById('ob-step1').classList.add('on');
+  updateLeftPanel('step1');
+}
+
+function goToStep(n){
+  document.querySelectorAll('.screen,.onboard-step').forEach(s=>s.classList.remove('on'));
+  document.getElementById('ob-step'+n).classList.add('on');
+  updateLeftPanel('step'+n);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function selectPersona(p){
+  document.querySelectorAll('.persona-card').forEach(c=>c.classList.remove('on'));
+  document.getElementById('pc-'+p).classList.add('on');
+  selectedPersona=p;
+  const btn=document.getElementById('ob-btn1');
+  btn.style.opacity='1';btn.style.pointerEvents='auto';
+  // Update left panel based on persona
+  const headlines={
+    homeowner:'Your house,\nyour budget,\nyour decision.',
+    contractor:'Quote faster.\nWin more jobs.\nLook professional.',
+    diaspora:'Build from abroad.\nKnow every pesewa.',
+  };
+  document.getElementById('leftHeadline').innerHTML=headlines[p].replace(/\n/g,'<br>');
+}
+
+function selectCity(c){
+  document.querySelectorAll('.city-btn').forEach(b=>b.classList.remove('on'));
+  document.getElementById('city-'+c).classList.add('on');
+  selectedCity=c;
+  const btn=document.getElementById('ob-btn2');
+  btn.style.opacity='1';btn.style.pointerEvents='auto';
+  document.getElementById('cityOtherInput').style.display=c==='other'?'block':'none';
+}
+
+function selectExp(e){
+  document.querySelectorAll('.exp-btn').forEach(b=>b.classList.remove('on'));
+  document.getElementById('exp-'+e).classList.add('on');
+  selectedExp=e;
+  const btn=document.getElementById('ob-btn3');
+  btn.style.opacity='1';btn.style.pointerEvents='auto';
+}
+
+function selectFirst(f){
+  document.querySelectorAll('#ob-step4 .exp-btn').forEach(b=>b.classList.remove('on'));
+  document.getElementById('first-'+f).classList.add('on');
+  selectedFirst=f;
+  const btn=document.getElementById('ob-btn4');
+  btn.style.opacity='1';btn.style.pointerEvents='auto';
+}
+
+function finishOnboarding(){
+  document.querySelectorAll('.screen,.onboard-step').forEach(s=>s.classList.remove('on'));
+  document.getElementById('ob-success').classList.add('on');
+  updateLeftPanel('success');
+  // Update success button based on what they want to do first
+  const labels={plan:'Open BuildWise — read my plan',boq:'Open BuildWise — build my cost list',prices:'Open BuildWise — check prices'};
+  const el=document.getElementById('successBtnText');
+  if(el&&selectedFirst)el.textContent=labels[selectedFirst]||'Open BuildWise';
+}
+
+function goToApp(){
+  window.location.href='buildwise-app.html';
+}
+
+// ── KEYBOARD SHORTCUTS ────────────────────────────────────────────────
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'){
+    const onStep=document.querySelector('.onboard-step.on');
+    const onScreen=document.querySelector('.screen.on');
+    if(onScreen){
+      const id=onScreen.id;
+      if(id==='screen-signin')handleSignIn();
+      else if(id==='screen-signup')handleSignUp();
+    }
+  }
+});
+</script>
+</body>
+</html>
